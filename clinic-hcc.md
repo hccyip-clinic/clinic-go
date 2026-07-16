@@ -8,6 +8,9 @@
 
 /grill-with-docs 
 
+opencode -s ses_09b73ce14ffeht2u7adNwzNPFl
+
+
 ---
 npx skills add mattpocock/skills
 
@@ -86,7 +89,7 @@ git config --global user.name "Your Name"
 # global
 
 npm install -g @github/copilot
-npm install -g opencode-ai@latest --allow-scripts=opencode-ai
+npm install -g opencode-ai@latest --allow-scripts=opencode-ai 
 
 
 npm install -D vitest

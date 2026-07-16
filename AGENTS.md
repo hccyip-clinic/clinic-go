@@ -109,3 +109,19 @@ Even "quick fixes" require `karpathy-code-rules`. Even "one-line changes" requir
 **Rationale:** LLMs are overconfident. Skills exist to surface assumptions, challenge obvious solutions, and prevent costly mistakes.
 
 ---
+
+## Agent Skills Configuration
+
+### Issue Tracker
+
+Local markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Triage Labels
+
+Default vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain Docs
+
+Single-context layout: `CONTEXT.md` at root + `docs/adr/` for ADRs. See `docs/agents/domain.md`.
+
+---

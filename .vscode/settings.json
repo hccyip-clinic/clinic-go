@@ -1,0 +1,5 @@
+{
+    "chat.agentHost.enabled": true,
+    "chat.agents.copilotCli.hideExtensionHost": true,
+    "chat.agents.claude.preferAgentHost": true
+}
