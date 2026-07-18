@@ -1,8 +1,9 @@
 # ADR-0005: Dashboard Layout and Navigation Structure
 
 **Date**: 2026-07-17  
-**Status**: Proposed  
+**Status**: Approved  
 **Drivers**: @development-team
+**Decisions Updated**: 2026-07-18 (see ADR-0007 for implementation details)
 
 ## Context
 
@@ -303,7 +304,7 @@ defaultUser := User{
 │       └── data.html            # Data retention + export
 ├── static/
 │   ├── js/
-│   │   └── chart.min.js         # Chart.js (vendored or CDN)
+│   │   └── chart.min.js         # Chart.js (loaded from CDN)
 │   └── css/
 │       └── tailwind.css         # Built TailwindCSS
 ├── handlers/
@@ -350,7 +351,7 @@ CREATE TABLE weekly_metrics_cache (
 );
 ```
 
-### HTMX Patterns
+### HTMX Patterns (see ADR-0007 for full details)
 
 **Notification bell badge refresh**:
 ```html
@@ -383,21 +384,21 @@ CREATE TABLE weekly_metrics_cache (
 {{end}}
 ```
 
-### Cleanup Job
+### Cleanup Job (see ADR-0007 for implementation)
 
 **Notification auto-cleanup**:
-- Trigger: First app startup on Monday
+- Trigger: Daily background goroutine (24-hour ticker)
 - Query: `DELETE FROM notifications WHERE expires_at < CURRENT_TIMESTAMP`
-- Implementation: Go `init()` function checks day of week, runs cleanup if Monday
+- Implementation: Goroutine started in `main()` on app startup
 
 ### Testing Strategy
 
 **Unit Tests** (Go):
-- Permission checks (HasPermission middleware)
+- Permission checks (HasPermission middleware) — see ADR-0007 for pattern
 - Notification categorization logic
 - Storage threshold calculations
 - Backup status state machine
-- Weekly metrics aggregation query
+- Weekly metrics aggregation query (live query, no cache)
 
 **Integration Tests**:
 - Dashboard page renders with all widgets
@@ -415,11 +416,11 @@ CREATE TABLE weekly_metrics_cache (
 ## When to Revisit
 
 This decision should be revisited if:
-- Multi-user support becomes a requirement (add roles table, permission inheritance)
-- Notification volume increases (need filtering, categories expansion)
-- Dashboard performance degrades (need query optimization, caching strategy)
-- Chart requirements expand (need dedicated analytics page)
-- HTMX coordination becomes complex (consider Alpine.js for client state)
+- **Multi-user support** becomes a requirement (add roles table, permission inheritance)
+- **Notification volume** increases significantly (>100/day, need pagination)
+- **Dashboard performance** degrades (>500ms load time, add caching)
+- **Chart requirements** expand beyond combo chart (need dedicated analytics page)
+- **HTMX coordination** becomes complex (consider Alpine.js for client state)
 
 ## References
 
@@ -429,8 +430,9 @@ This decision should be revisited if:
 - **Icons**: Heroicons (https://heroicons.com)
 - **HTMX**: https://htmx.org
 - **Go Templates**: https://pkg.go.dev/html/template
+- **ADR-0007**: Implementation decisions (Chart.js, notifications, flash messages, cleanup job, permissions)
 
 ---
 
-**Last updated**: 2026-07-17  
+**Last updated**: 2026-07-18  
 **Maintained by**: Development Team
