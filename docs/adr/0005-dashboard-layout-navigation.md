@@ -45,13 +45,14 @@ Building the base dashboard layout for the clinic management system. The applica
 ### Architecture
 
 ```
+
 ┌─────────────────────────────────────────────────────────┐
-│  Header                                                  │
-│  ┌─────────────────────────────┐ ┌──────────────────┐  │
-│  │  Clinic Name (editable)     │ │ 🔔 Notifications │  │
-│  └─────────────────────────────┘ └──────────────────┘  │
-├─────────────────────────────────────────────────────────┤
-│ Sidebar │  Content Area                                 │
+| Sidebar │  Header                                       │
+|         │  ┌──────────────────┐ ┌──────────────────┐    │
+|         │  │  Clinic Name     │ │ 🔔 Notifications │   │
+|         │  └──────────────────┘ └──────────────────┘   │
+|         ├─────────────────────────────────────────── ──┤
+│         │  Content Area                                │
 │ ┌─────┐ │  ┌─────────────────────────────────────────┐ │
 │ │📊   │ │  │  Quick Actions (Hero Section)           │ │
 │ │📋   │ │  │  [Create Receipt] [Search Patient]      │ │

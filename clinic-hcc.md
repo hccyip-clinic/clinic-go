@@ -83,7 +83,8 @@ git remote set-url origin https://github.com/hccyip-clinic/clinic-go.git
 git branch -M main
 git push -u origin main
 
-git config --global user.name "Your Name"
+git config user.name "hccyip"
+git config user.email "hccyip@gmail.com"
 
 
 # global
@@ -103,5 +104,8 @@ npm update
 npm install @faker-js/faker@latest
 npm install @types/node@latest
 npm install vite-plugin-svgr@latest
+
+Get-Process -Name "chrome*" | Stop-Process -Force
+
 
 ```

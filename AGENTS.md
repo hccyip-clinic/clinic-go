@@ -17,7 +17,7 @@
 - Keep changes focused and incremental; avoid large rewrites unless explicitly requested.
 - Prefer clarity and maintainability over cleverness.
 - When unsure about architecture or intent, add a short `// TODO:` comment rather than guessing.
-- NEVER use emoji as icons in the React codebase, use tailwind icons [http://github.com/hyoban/tailwindcss-icons].
+- NEVER use emoji as icons in the codebase, use tailwind icons [http://github.com/hyoban/tailwindcss-icons].
 - ALWAYS set proper id attribute to html elements:
   - navigation elements: <button ...>, <a ...>
   - form elements:  <input ...>,  <select ...>, <textbox ...>
