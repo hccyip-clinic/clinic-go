@@ -462,6 +462,6 @@ func financialYear(date Date) FinancialYear {
 ## References
 
 - **Full Context**: `CONTEXT.md` (implementation-specific details)
-- **Prototype Spec**: `docs/prototype-spec.md` (Hugo + HTMX implementation)
+- **Prototype Spec**: `docs/prototype-spec.md` (Go + HTMX implementation)
 - **Quick Start**: `docs/QUICKSTART.md` (getting started guide)
 - **Architecture Decision**: `docs/adr/0004-hugo-htmx-sqlite-architecture.md`

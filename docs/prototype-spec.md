@@ -74,7 +74,7 @@ April 1 — March 31 (Hong Kong standard). Used for reporting and analytics.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              Single Binary (Go + Hugo)                  │
+│              Single Binary (Go + html/template)                  │
 │  ┌───────────────────────────────────────────────────┐  │
 │  │  HTTP Server (localhost:PORT)                     │  │
 │  │  - Route handlers                                 │  │
@@ -112,7 +112,7 @@ April 1 — March 31 (Hong Kong standard). Used for reporting and analytics.
 - Server-rendered HTML
 - HTMX for dynamic interactions
 - SQLite for persistent storage
-- No build step (Hugo static generation + Go HTTP server)
+- No build step (Go templates + HTTP server)
 
 ---
 
@@ -123,7 +123,7 @@ April 1 — March 31 (Hong Kong standard). Used for reporting and analytics.
 | Component | Technology | Purpose |
 |-----------|------------|---------|
 | **Language** | Go 1.21+ | HTTP server, business logic |
-| **Web Framework** | Hugo (Go templates) | Server-side rendering |
+| **Web Framework** | Go `html/template` | Server-side rendering |
 | **Database** | SQLite 3 | Embedded relational database |
 | **HTTP Server** | Go `net/http` (or `chi` router) | Localhost server |
 
@@ -141,7 +141,7 @@ April 1 — March 31 (Hong Kong standard). Used for reporting and analytics.
 | Tool | Purpose |
 |------|---------|
 | `go mod` | Dependency management |
-| `hugo` | Template generation (optional, can use Go templates directly) |
+| `gotemplate` | Built-in Go templating (no external dependency) |
 | `tailwindcss` CLI | CSS compilation |
 | `air` | Hot reload for development |
 
@@ -356,4 +356,4 @@ CREATE INDEX idx_patients_hkid ON patients(hkid);
 - **Domain Model**: `DOMAIN.md`
 - **Quick Start Guide**: `QUICKSTART.md`
 - **Architecture Decision**: `docs/adr/0004-hugo-htmx-sqlite-architecture.md`
-- **Decision Matrix**: `hugo-htmx-sqlite.md`
+- **Export Format Decision**: `docs/adr/0006-go-standard-library-for-exports.md`

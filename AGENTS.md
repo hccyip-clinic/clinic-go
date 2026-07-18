@@ -3,6 +3,9 @@
 - Must follow this file when working in the repository.
 
 ## Project Stack
+
+- **HUGO** - Server-Rendered HTML with HTMX
+- **Data Store** - SQLite
 - **TailwindCSS** — styling
 - **Dashboard UI** — visually inspired by TailAdmin’s free React Tailwind admin dashboard (reference only)  
   https://github.com/TailAdmin/free-react-tailwind-admin-dashboard

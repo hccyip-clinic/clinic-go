@@ -1,8 +1,8 @@
 # Clinic Management — Documentation Index
 
-## 📚 Documentation Set for Hugo + HTMX + SQLite Prototype
+## 📚 Documentation Set for Go + HTMX + SQLite Prototype
 
-Complete specification for building a self-hosted clinic management application with Hugo + HTMX + SQLite.
+Complete specification for building a self-hosted clinic management application with Go + HTMX + SQLite.
 
 ---
 
@@ -39,7 +39,7 @@ Complete specification for building a self-hosted clinic management application 
 
 ### 2. **Prototype Specification** (`prototype-spec.md`)
 
-**Purpose:** Technical specification for the Hugo + HTMX + SQLite prototype.
+**Purpose:** Technical specification for the Go + HTMX + SQLite prototype.
 
 **Contents:**
 - Technology stack details
@@ -68,17 +68,17 @@ Complete specification for building a self-hosted clinic management application 
 - Development workflow
 - Deployment instructions
 
-**Use when:** Setting up the new Hugo + HTMX workspace.
+**Use when:** Setting up the new Go + HTMX workspace.
 
 ---
 
 ### 4. **Architecture Decision Record** (`docs/adr/0004-hugo-htmx-sqlite-architecture.md`)
 
-**Purpose:** Documents the decision to adopt Hugo + HTMX + SQLite, including trade-offs.
+**Purpose:** Documents the decision to adopt Go + HTMX + SQLite, including trade-offs.
 
 **Contents:**
 - Context (requirements for simple CRUD app)
-- Considered options (React, Hugo, Python, Blazor)
+- Considered options (React, Go, Python, Blazor)
 - Decision rationale
 - Consequences (positive/negative)
 - Testing strategy
@@ -88,16 +88,11 @@ Complete specification for building a self-hosted clinic management application 
 
 ---
 
-### 5. **Decision Matrix** (`hugo-htmx-sqlite.md`)
+### 5. **Decision Matrix** (DELETED - was `hugo-htmx-sqlite.md`)
 
-**Purpose:** Comparison matrix between Hugo + HTMX + SQLite and Vite + React.
+**Status:** Deleted — contained misleading "Hugo" naming.
 
-**Contents:**
-- Criteria comparison table
-- Recommendation rules
-- Practical shortcuts for decision-making
-
-**Use when:** Justifying the architecture choice.
+**Replacement:** See `docs/adr/0004-hugo-htmx-sqlite-architecture.md` for the corrected architecture decision.
 
 ---
 
@@ -134,9 +129,10 @@ docs/
 ├── DOMAIN.md                         ← Pure domain knowledge
 ├── prototype-spec.md                 ← Technical specification
 ├── QUICKSTART.md                     ← Setup guide
-├── hugo-htmx-sqlite.md               ← Decision matrix
 └── adr\
     └── 0004-hugo-htmx-sqlite-architecture.md  ← Architecture decision
+    └── 0005-dashboard-layout-navigation.md    ← Dashboard UI
+    └── 0006-go-standard-library-for-exports.md ← CSV/PDF/Excel exports
 ```
 
 ---

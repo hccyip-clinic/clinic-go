@@ -1,4 +1,4 @@
-# ADR-0004: Hugo + HTMX + SQLite for Self-Hosted Desktop App
+# ADR-0004: Go + HTMX + SQLite for Self-Hosted Desktop App
 
 **Date**: 2026-07-15  
 **Status**: Proposed  
@@ -12,8 +12,14 @@ Building a simple CRUD application for clinic receipt management requires:
 - Minimal client-side interactivity (form validation, dynamic line items)
 - Server-side data storage (SQLite)
 - Dashboard UI (TailAdmin-inspired)
+- Export formats: CSV, Excel, PDF for receipts and reports
 
 The team is more comfortable with server-rendered HTML and Go than client-side JavaScript frameworks.
+
+**Clarification:** Despite the historical name "Hugo" in this ADR title, Hugo (the static site generator) is NOT used. The architecture is:
+- **Go HTTP server** with `html/template` for server-rendered HTML
+- **HTMX** for partial page updates
+- **Embedded SQLite** for data storage
 
 ### Considered Options
 
@@ -21,13 +27,13 @@ The team is more comfortable with server-rendered HTML and Go than client-side J
 - Pros: Rich interactivity, existing codebase, offline-capable
 - Cons: Complex debugging, build step, React learning curve
 
-**Option 2: Hugo + HTMX + SQLite**
-- Pros: Simple deployment, server-rendered HTML, minimal JavaScript, familiar mental model
+**Option 2: Go + HTMX + SQLite**
+- Pros: Simple deployment, server-rendered HTML, minimal JavaScript, familiar mental model, single binary
 - Cons: Network round-trips for interactions, no offline support, HTMX coordination complexity
 
-**Option 3: Python + FastAPI + HTMX**
-- Pros: Even simpler than Go, rapid prototyping, excellent HTMX support
-- Cons: Python runtime dependency, slower execution, larger deployment footprint
+**Option 3: Python + FastAPI/Flask + HTMX**
+- Pros: Python ecosystem (pandas, reportlab), rapid prototyping, excellent HTMX support, team familiarity
+- Cons: Python runtime dependency, larger deployment footprint, virtual environment management
 
 **Option 4: .NET Blazor Server**
 - Pros: Rich interactivity, C# ecosystem, single deployment model
@@ -35,7 +41,7 @@ The team is more comfortable with server-rendered HTML and Go than client-side J
 
 ## Decision
 
-**Adopt Hugo + HTMX + SQLite** for the clinic management prototype.
+**Adopt Go + HTMX + SQLite** for the clinic management prototype.
 
 ### Rationale
 
@@ -48,7 +54,7 @@ The team is more comfortable with server-rendered HTML and Go than client-side J
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  Single Binary (Go + Hugo Templates)                    │
+│  Single Binary (Go + html/template)                    │
 │  - HTTP server (localhost:PORT)                         │
 │  - SQLite database (embedded)                           │
 │  - Business logic (Go handlers)                         │
@@ -151,7 +157,7 @@ This decision should be revisited if:
 
 - **Prototype Specification**: `docs/prototype-spec.md`
 - **Quick Start Guide**: `docs/QUICKSTART.md`
-- **Decision Matrix**: `docs/hugo-htmx-sqlite.md`
+- **Decision Matrix**: `docs/hugo-htmx-sqlite.md` (DELETED - misleading title)
 - **Domain Model**: `DOMAIN.md`
 
 ---

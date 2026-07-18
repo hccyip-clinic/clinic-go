@@ -1,4 +1,4 @@
-# Quick-Start Guide: Hugo + HTMX + SQLite Clinic App
+# Quick-Start Guide: Go + HTMX + SQLite Clinic App
 
 ## Prerequisites
 

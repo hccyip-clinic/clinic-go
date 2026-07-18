@@ -8,7 +8,7 @@
 
 /grill-with-docs 
 
-opencode -s ses_09b73ce14ffeht2u7adNwzNPFl
+anything still unclear in this grill? 
 
 
 ---
@@ -77,8 +77,8 @@ npx skills ls -a claude-code -a opencode
 
 ```md
 # git
-git remote add origin https://github.com/hccyip-clinic/clinic-hugo.git
-git remote set-url origin https://github.com/hccyip-clinic/clinic-hugo.git
+git remote add origin https://github.com/hccyip-clinic/clinic-go.git
+git remote set-url origin https://github.com/hccyip-clinic/clinic-go.git
 
 git branch -M main
 git push -u origin main

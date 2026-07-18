@@ -8,6 +8,12 @@ A self-hosted desktop application for **clinic receipt management**, designed fo
 
 **Deployment model:** Single binary (Go + embedded SQLite) running on localhost, accessed via browser.
 
+**Architecture Clarification:** This is NOT a Hugo static site. The stack is:
+- **Backend:** Go HTTP server with `html/template` for server-rendered HTML
+- **Dynamic UI:** HTMX for partial page updates without full React complexity
+- **Data:** Embedded SQLite database
+- **Hugo's role:** None — Hugo is a static site generator and is NOT used in this project
+
 ---
 
 ## Key User Roles
@@ -62,6 +68,22 @@ Daily at midnight → Mask patient data → Write delta backup → Enforce 30-da
 **Acupuncture:** Traditional Chinese medicine needle therapy.
 
 **Internal Medicine:** Traditional Chinese herbal medicine prescription.
+
+**Dashboard:** Home landing page showing quick actions, system status cards, and weekly metrics chart.
+
+**Quick Actions:** Curated set of 3 primary workflow entry points on dashboard (Create Receipt, Search Patient, View Today's Receipts).
+
+**System Status:** At-a-glance widgets showing backup health and storage metrics with actionable thresholds.
+
+**Notifications:** System-generated alerts categorized as Critical/Warning/Info (persistent, stored in SQLite, 7-day retention) or Success/Fail (ephemeral flash messages). Bell badge shows unread critical + fail count for today.
+
+**Permissions:** Direct permission strings assigned to users (e.g., `receipts:create`, `patients:read`). No role abstraction in Phase 1. Defined as Go constants in `handlers/permissions.go`.
+
+**Financial Week:** Monday–Saturday (Hong Kong business week). Dashboard weekly metrics chart shows Mon→Today.
+
+**Session:** In-memory session store with httpOnly cookie expiry. Single-user desktop app — restart clears sessions.
+
+**Clinic Settings:** Single-row SQLite table (`clinic_settings`) storing clinic name, address, telephone. Default from `config.json` on first run.
 
 ---
 
