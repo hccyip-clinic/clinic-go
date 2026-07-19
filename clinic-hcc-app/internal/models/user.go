@@ -9,6 +9,9 @@ type User struct {
 }
 
 func (u *User) HasPermission(perm handlers.Permission) bool {
+	if u == nil {
+		return false
+	}
 	for _, p := range u.Permissions {
 		if p == perm {
 			return true
