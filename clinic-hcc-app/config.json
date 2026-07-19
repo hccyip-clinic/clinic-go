@@ -1,0 +1,9 @@
+{
+  "clinic_name_en": "Hong Ching Clinic",
+  "clinic_name_zh": "康寧中醫診所",
+  "clinic_address": "Room 123, 12/F, Example Building, Hong Kong",
+  "clinic_telephone": "+852 1234 5678",
+  "server_port": 8080,
+  "database_path": "./data/clinic.db",
+  "session_secret": "change-me-in-production"
+}

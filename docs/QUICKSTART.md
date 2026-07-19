@@ -12,9 +12,9 @@
 ### 1. Initialize Go Module
 
 ```bash
-mkdir clinic-app
-cd clinic-app
-go mod init clinic-app
+mkdir clinic-hcc-app
+cd clinic-hcc-app
+go mod init clinic-hcc-app
 ```
 
 ### 2. Install Dependencies
@@ -34,38 +34,8 @@ npm install -D tailwindcss @tailwindcss/vite
 ### 3. Directory Structure
 
 ```
-clinic-app/
+clinic-hcc-app/
 ├── cmd/
-│   └── server/
-│       └── main.go           # Entry point
-├── internal/
-│   ├── handlers/             # HTTP handlers
-│   ├── models/               # Go structs
-│   ├── repository/           # SQLite queries
-│   └── services/             # Business logic
-├── templates/                # HTML templates
-│   ├── layouts/
-│   │   └── dashboard.html    # Base layout
-│   ├── pages/
-│   │   ├── dashboard.html
-│   │   ├── receipts.html
-│   │   ├── receipt-form.html
-│   │   ├── patients.html
-│   │   └── settings.html
-│   └── partials/
-│       ├── sidebar.html
-│       ├── header.html
-│       └── receipt-row.html
-├── static/
-│   ├── css/
-│   │   └── styles.css        # Tailwind output
-│   └── js/
-│       └── htmx.min.js       # HTMX CDN or local
-├── data/
-│   └── clinic.db             # SQLite database (gitignore)
-├── input.css                 # Tailwind input
-├── tailwind.config.js
-└── go.mod
 ```
 
 ---
@@ -118,8 +88,8 @@ CREATE TABLE receipts (
 package main
 
 import (
-    "clinic-app/internal/handlers"
-    "clinic-app/internal/repository"
+    "clinic-hcc-app/internal/handlers"
+    "clinic-hcc-app/internal/repository"
     "log"
     "net/http"
 
@@ -173,7 +143,7 @@ func main() {
 package handlers
 
 import (
-    "clinic-app/internal/repository"
+    "clinic-hcc-app/internal/repository"
     "database/sql"
     "html/template"
     "net/http"
@@ -432,7 +402,7 @@ npx tailwindcss -i input.css -o static/css/styles.css --watch
 ### Run Server
 
 ```bash
-# Terminal 1: Go server
+cd clinic-hcc-app
 go run cmd/server/main.go
 
 # Terminal 2: Tailwind watch
@@ -474,13 +444,13 @@ go test ./...
 ### Build Binary
 
 ```bash
-CGO_ENABLED=1 go build -o clinic-app cmd/server/main.go
+CGO_ENABLED=1 go build -o clinic-hcc-app.exe cmd/server/main.go
 ```
 
 ### Run Production
 
 ```bash
-./clinic-app
+./clinic-hcc-app.exe
 ```
 
 The application runs as a single binary with embedded SQLite. No external dependencies required.

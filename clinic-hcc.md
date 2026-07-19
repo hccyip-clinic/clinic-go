@@ -8,6 +8,9 @@
 
 /grill-with-docs 
 
+/grill-me
+what is the current implmentation phase, anything still unclear? 
+
 anything still unclear in this grill? 
 
 
@@ -105,7 +108,9 @@ npm install @faker-js/faker@latest
 npm install @types/node@latest
 npm install vite-plugin-svgr@latest
 
-Get-Process -Name "chrome*" | Stop-Process -Force
+Get-Process -Name "open*" | Stop-Process -Force
 
+# go
+go version
 
 ```

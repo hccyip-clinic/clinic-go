@@ -213,7 +213,7 @@ The prototype is successful when:
 ## 📞 Next Steps
 
 1. **Create new workspace** — Separate Git repository
-2. **Initialize Go module** — `go mod init clinic-app`
+2. **Initialize Go module** — `go mod init clinic-hcc-app`
 3. **Set up SQLite** — Create database with schema from `prototype-spec.md`
 4. **Build HTTP server** — Follow `QUICKSTART.md` examples
 5. **Implement Phase 1** — Setup and core CRUD
