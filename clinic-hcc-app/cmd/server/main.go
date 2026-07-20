@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
 	"clinic-hcc-app/internal/config"
 	"clinic-hcc-app/internal/database"
+	"clinic-hcc-app/internal/handlers"
 )
 
 func main() {
@@ -24,10 +26,13 @@ func main() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
+	router := handlers.NewRouter(db)
+	mux := router.Setup()
+
 	addr := fmt.Sprintf(":%d", cfg.ServerPort)
 	log.Printf("Starting server on %s (database: %s)", addr, cfg.DatabasePath)
 
-	if err := http.ListenAndServe(addr, nil); err != nil {
+	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
