@@ -1,0 +1,14 @@
+{
+  "name": "clinic-hcc-app",
+  "version": "1.0.0",
+  "description": "Clinic receipt management system",
+  "scripts": {
+    "dev:css": "npx tailwindcss -i src/index.css -o static/css/styles.css --watch",
+    "build:css": "npx tailwindcss -i src/index.css -o static/css/styles.css --minify",
+    "dev": "npm run dev:css"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0"
+  }
+}
