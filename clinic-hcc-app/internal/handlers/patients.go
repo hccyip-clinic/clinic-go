@@ -19,7 +19,7 @@ func (r *Router) PatientList(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "unable to load patients", http.StatusInternalServerError)
 		return
 	}
-	r.render(w, "patients", map[string]interface{}{
+	r.render(w, req, "patients", map[string]interface{}{
 		"Title":      "Patients",
 		"ActivePage": "patients",
 		"Patients":   patients,
@@ -28,7 +28,7 @@ func (r *Router) PatientList(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *Router) PatientFormNew(w http.ResponseWriter, req *http.Request) {
-	r.render(w, "patient-form", map[string]interface{}{
+	r.render(w, req, "patient-form", map[string]interface{}{
 		"Title":      "New Patient",
 		"ActivePage": "patients",
 		"Patient":    &models.Patient{Gender: "O"},
@@ -41,7 +41,7 @@ func (r *Router) PatientFormEdit(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "patient not found", http.StatusNotFound)
 		return
 	}
-	r.render(w, "patient-form", map[string]interface{}{
+	r.render(w, req, "patient-form", map[string]interface{}{
 		"Title":      "Edit Patient",
 		"ActivePage": "patients",
 		"Patient":    patient,
@@ -59,7 +59,7 @@ func (r *Router) PatientCreate(w http.ResponseWriter, req *http.Request) {
 		Gender: req.FormValue("gender"),
 	}
 	if err := r.patients.Create(req.Context(), patient); err != nil {
-		r.render(w, "patient-form", map[string]interface{}{
+		r.render(w, req, "patient-form", map[string]interface{}{
 			"Title":      "New Patient",
 			"ActivePage": "patients",
 			"Patient":    patient,
@@ -83,7 +83,7 @@ func (r *Router) PatientUpdate(w http.ResponseWriter, req *http.Request) {
 	patient.Name = req.FormValue("name")
 	patient.Gender = req.FormValue("gender")
 	if err := r.patients.Update(req.Context(), patient); err != nil {
-		r.render(w, "patient-form", map[string]interface{}{
+		r.render(w, req, "patient-form", map[string]interface{}{
 			"Title":      "Edit Patient",
 			"ActivePage": "patients",
 			"Patient":    patient,

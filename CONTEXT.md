@@ -83,9 +83,13 @@ Daily at midnight → Mask patient data → Write delta backup → Enforce 30-da
 
 **Session:** In-memory session store with httpOnly cookie expiry. Single-user desktop app — restart clears sessions.
 
-**Clinic Settings:** Single-row SQLite table (`clinic_settings`) storing clinic name, address, telephone. Default from `config.json` on first run.
+**Clinic Settings:** Single-row SQLite table (`settings`) storing clinic name, address, telephone, receipt configuration, retention years, and the Argon2id password hash. Defaults are seeded on first run.
 
 **Patient Identity:** A patient has one unique canonical HKID. Names and gender may be updated, but the HKID is immutable after creation in Phase 1.
+
+**Receipt Line Items:** Phase 1 receipts support multiple ordered line items. Drafts require at least one valid item; finalized receipts and their items are immutable.
+
+**Local Security:** Phase 1 requires single-user login, in-memory sessions, CSRF protection for mutations, and loopback binding by default.
 
 ---
 

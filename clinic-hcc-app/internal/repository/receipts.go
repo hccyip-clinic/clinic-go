@@ -35,6 +35,9 @@ func (r *ReceiptRepository) CreateDraft(ctx context.Context, receipt *models.Rec
 	receipt.Status = models.StatusDraft
 	receipt.Subtotal = models.CalculateSubtotal(receipt.LineItems)
 	receipt.GrandTotal = models.CalculateGrandTotal(receipt.Subtotal, receipt.DiscountType, receipt.DiscountValue)
+	if validationErrors := models.ValidateReceipt(receipt); len(validationErrors) > 0 {
+		return fmt.Errorf("receipt validation failed: %v", validationErrors)
+	}
 
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -77,7 +80,7 @@ func (r *ReceiptRepository) Get(ctx context.Context, id string) (*models.Receipt
 
 	rows, err := r.db.QueryContext(ctx, `
 		SELECT id, description, quantity, unit_price, subtotal
-		FROM receipt_items WHERE receipt_id = ? ORDER BY id
+		FROM receipt_items WHERE receipt_id = ? ORDER BY position
 	`, id)
 	if err != nil {
 		return nil, err
@@ -160,6 +163,9 @@ func (r *ReceiptRepository) UpdateDraft(ctx context.Context, receipt *models.Rec
 	}
 	receipt.Subtotal = models.CalculateSubtotal(receipt.LineItems)
 	receipt.GrandTotal = models.CalculateGrandTotal(receipt.Subtotal, receipt.DiscountType, receipt.DiscountValue)
+	if validationErrors := models.ValidateReceipt(receipt); len(validationErrors) > 0 {
+		return fmt.Errorf("receipt validation failed: %v", validationErrors)
+	}
 
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -252,11 +258,11 @@ func (r *ReceiptRepository) Finalize(ctx context.Context, id, prefix string) err
 }
 
 func insertItems(ctx context.Context, tx *sql.Tx, receiptID string, items []models.LineItem) error {
-	for _, item := range items {
+	for position, item := range items {
 		if _, err := tx.ExecContext(ctx, `
-			INSERT INTO receipt_items (receipt_id, description, quantity, unit_price, subtotal)
-			VALUES (?, ?, ?, ?, ?)
-		`, receiptID, item.Description, item.Quantity, item.UnitPrice, item.Quantity*item.UnitPrice); err != nil {
+		INSERT INTO receipt_items (receipt_id, position, description, quantity, unit_price, subtotal)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`, receiptID, position, item.Description, item.Quantity, item.UnitPrice, item.Quantity*item.UnitPrice); err != nil {
 			return err
 		}
 	}
@@ -283,7 +289,7 @@ func getReceiptTx(ctx context.Context, tx *sql.Tx, id string) (*models.Receipt, 
 func getItemsTx(ctx context.Context, tx *sql.Tx, receiptID string) ([]models.LineItem, error) {
 	rows, err := tx.QueryContext(ctx, `
 		SELECT id, description, quantity, unit_price, subtotal
-		FROM receipt_items WHERE receipt_id = ? ORDER BY id
+		FROM receipt_items WHERE receipt_id = ? ORDER BY position
 	`, receiptID)
 	if err != nil {
 		return nil, err

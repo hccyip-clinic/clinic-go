@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,7 +24,7 @@ func (r *Router) ReceiptList(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "unable to load receipts", http.StatusInternalServerError)
 		return
 	}
-	r.render(w, "receipts", map[string]interface{}{
+	r.render(w, req, "receipts", map[string]interface{}{
 		"Title":      "Receipts",
 		"ActivePage": "receipts",
 		"Receipts":   receipts,
@@ -36,11 +37,14 @@ func (r *Router) ReceiptFormNew(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "unable to load patients", http.StatusInternalServerError)
 		return
 	}
-	r.render(w, "receipt-form", map[string]interface{}{
+	r.render(w, req, "receipt-form", map[string]interface{}{
 		"Title":      "New Receipt",
 		"ActivePage": "receipts",
-		"Receipt":    &models.Receipt{DiscountType: models.DiscountNone},
-		"Patients":   patients,
+		"Receipt": &models.Receipt{
+			DiscountType: models.DiscountNone,
+			LineItems:    []models.LineItem{{Quantity: 1}},
+		},
+		"Patients": patients,
 	})
 }
 
@@ -63,7 +67,7 @@ func (r *Router) ReceiptView(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "receipt not found", http.StatusNotFound)
 		return
 	}
-	r.render(w, "receipt-view", map[string]interface{}{
+	r.render(w, req, "receipt-view", map[string]interface{}{
 		"Title":      "Receipt",
 		"ActivePage": "receipts",
 		"Receipt":    receipt,
@@ -76,12 +80,16 @@ func (r *Router) ReceiptFormEdit(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "receipt not found", http.StatusNotFound)
 		return
 	}
+	if receipt.Status != models.StatusDraft {
+		http.Error(w, "finalized receipts are immutable", http.StatusConflict)
+		return
+	}
 	patients, err := r.patients.Search(req.Context(), "")
 	if err != nil {
 		http.Error(w, "unable to load patients", http.StatusInternalServerError)
 		return
 	}
-	r.render(w, "receipt-form", map[string]interface{}{
+	r.render(w, req, "receipt-form", map[string]interface{}{
 		"Title":      "Edit Receipt",
 		"ActivePage": "receipts",
 		"Receipt":    receipt,
@@ -125,17 +133,31 @@ func receiptFromForm(req *http.Request) (*models.Receipt, error) {
 	if err := req.ParseForm(); err != nil {
 		return nil, err
 	}
-	quantity, err := strconv.Atoi(req.FormValue("quantity"))
-	if err != nil {
-		return nil, err
-	}
-	unitPrice, err := strconv.Atoi(req.FormValue("unit_price"))
-	if err != nil {
-		return nil, err
-	}
 	discountValue, err := strconv.Atoi(req.FormValue("discount_value"))
 	if err != nil && req.FormValue("discount_value") != "" {
 		return nil, err
+	}
+	descriptions := req.Form["description"]
+	quantities := req.Form["quantity"]
+	unitPrices := req.Form["unit_price"]
+	if len(descriptions) != len(quantities) || len(descriptions) != len(unitPrices) {
+		return nil, fmt.Errorf("line item fields are mismatched")
+	}
+	items := make([]models.LineItem, 0, len(descriptions))
+	for index := range descriptions {
+		quantity, err := strconv.Atoi(quantities[index])
+		if err != nil {
+			return nil, err
+		}
+		unitPrice, err := strconv.Atoi(unitPrices[index])
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, models.LineItem{
+			Description: descriptions[index],
+			Quantity:    quantity,
+			UnitPrice:   unitPrice,
+		})
 	}
 	return &models.Receipt{
 		PatientID:     req.FormValue("patient_id"),
@@ -143,17 +165,13 @@ func receiptFromForm(req *http.Request) (*models.Receipt, error) {
 		Diagnosis:     req.FormValue("diagnosis"),
 		DiscountType:  models.DiscountType(req.FormValue("discount_type")),
 		DiscountValue: discountValue,
-		LineItems: []models.LineItem{{
-			Description: req.FormValue("description"),
-			Quantity:    quantity,
-			UnitPrice:   unitPrice,
-		}},
+		LineItems:     items,
 	}, nil
 }
 
 func (r *Router) renderReceiptFormError(w http.ResponseWriter, req *http.Request, receipt *models.Receipt, message string) {
 	patients, _ := r.patients.Search(req.Context(), "")
-	r.render(w, "receipt-form", map[string]interface{}{
+	r.render(w, req, "receipt-form", map[string]interface{}{
 		"Title":      "Receipt",
 		"ActivePage": "receipts",
 		"Receipt":    receipt,

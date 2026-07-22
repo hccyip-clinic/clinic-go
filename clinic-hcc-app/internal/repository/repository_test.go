@@ -82,3 +82,56 @@ func TestReceiptRepository_FinalizeMakesReceiptImmutable(t *testing.T) {
 		t.Fatalf("expected immutable error, got %v", err)
 	}
 }
+
+func TestReceiptRepository_PreservesLineItemOrder(t *testing.T) {
+	db := testDB(t)
+	patients := NewPatientRepository(db)
+	receipts := NewReceiptRepository(db)
+	ctx := context.Background()
+
+	patient := &models.Patient{Name: "Chan Tai Man", HKID: "A123456(8)", Gender: "O"}
+	if err := patients.Create(ctx, patient); err != nil {
+		t.Fatalf("create patient: %v", err)
+	}
+
+	receipt := &models.Receipt{
+		PatientID:    patient.ID,
+		VisitDate:    "2026-07-23",
+		DiscountType: models.DiscountNone,
+		LineItems: []models.LineItem{
+			{Description: "Second entered", Quantity: 1, UnitPrice: 200},
+			{Description: "First entered", Quantity: 1, UnitPrice: 100},
+		},
+	}
+
+	if err := receipts.CreateDraft(ctx, receipt); err != nil {
+		t.Fatalf("create draft: %v", err)
+	}
+	loaded, err := receipts.Get(ctx, receipt.ID)
+	if err != nil {
+		t.Fatalf("get draft: %v", err)
+	}
+	if len(loaded.LineItems) != 2 || loaded.LineItems[0].Description != "Second entered" || loaded.LineItems[1].Description != "First entered" {
+		t.Fatalf("line-item order was not preserved: %#v", loaded.LineItems)
+	}
+}
+
+func TestReceiptRepository_RejectsInvalidDraft(t *testing.T) {
+	db := testDB(t)
+	patients := NewPatientRepository(db)
+	receipts := NewReceiptRepository(db)
+	ctx := context.Background()
+
+	patient := &models.Patient{Name: "Chan Tai Man", HKID: "A123456(8)", Gender: "O"}
+	if err := patients.Create(ctx, patient); err != nil {
+		t.Fatalf("create patient: %v", err)
+	}
+	err := receipts.CreateDraft(ctx, &models.Receipt{
+		PatientID:    patient.ID,
+		VisitDate:    "2026-07-23",
+		DiscountType: models.DiscountNone,
+	})
+	if err == nil {
+		t.Fatal("expected empty draft to be rejected")
+	}
+}

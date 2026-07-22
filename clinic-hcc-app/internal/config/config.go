@@ -11,6 +11,7 @@ type Config struct {
 	ClinicAddress   string `json:"clinic_address"`
 	ClinicTelephone string `json:"clinic_telephone"`
 	ServerPort      int    `json:"server_port"`
+	BindAddress     string `json:"bind_address"`
 	DatabasePath    string `json:"database_path"`
 	SessionSecret   string `json:"session_secret"`
 }

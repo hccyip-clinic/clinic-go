@@ -225,7 +225,7 @@ The prototype is successful when:
 
 - **HTMX Reference:** https://htmx.org/reference/
 - **TailwindCSS v4:** https://tailwindcss.com/docs
-- **Go SQLite:** https://github.com/mattn/go-sqlite3
+- **Go SQLite:** https://pkg.go.dev/modernc.org/sqlite
 - **Chi Router:** https://github.com/go-chi/chi
 - **TailAdmin (Demo):** https://tailadmin.com/
 

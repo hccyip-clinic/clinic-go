@@ -1,5 +1,5 @@
 {{define "content"}}
-<form id="receipt-form" method="post" action="{{if .Receipt.ID}}/receipts/{{.Receipt.ID}}{{else}}/receipts{{end}}" class="max-w-3xl space-y-6">
+<form id="receipt-form" method="post" action="{{if .Receipt.ID}}/receipts/{{.Receipt.ID}}{{else}}/receipts{{end}}" class="max-w-3xl space-y-6"><input id="receipt-csrf-token" type="hidden" name="csrf_token" value="{{.CSRFToken}}">
     {{if .Error}}<p id="receipt-form-error" class="rounded bg-red-50 p-3 text-red-700">{{.Error}}</p>{{end}}
     <section class="rounded-xl bg-white p-6 shadow">
         <h3 class="mb-4 text-xl font-bold">1. Patient</h3>
@@ -18,16 +18,42 @@
     </section>
     <section class="rounded-xl bg-white p-6 shadow">
         <h3 class="mb-4 text-xl font-bold">3. Charges</h3>
-        <label for="receipt-description" class="block font-semibold">Treatment</label>
-        <input id="receipt-description" name="description" required value="{{with index .Receipt.LineItems 0}}{{.Description}}{{end}}" class="mb-4 mt-1 w-full rounded border px-3 py-2">
-        <div class="grid gap-4 md:grid-cols-2">
-            <div><label for="receipt-quantity" class="block font-semibold">Quantity</label><input id="receipt-quantity" name="quantity" type="number" min="1" value="{{with index .Receipt.LineItems 0}}{{.Quantity}}{{else}}1{{end}}" required class="mt-1 w-full rounded border px-3 py-2"></div>
-            <div><label for="receipt-unit-price" class="block font-semibold">Unit price (cents)</label><input id="receipt-unit-price" name="unit_price" type="number" min="0" value="{{with index .Receipt.LineItems 0}}{{.UnitPrice}}{{else}}0{{end}}" required class="mt-1 w-full rounded border px-3 py-2"></div>
+        <div id="receipt-line-items" class="space-y-4">
+            {{range $index, $item := .Receipt.LineItems}}
+            <div id="receipt-line-item-{{$index}}" class="rounded border p-4">
+                <div class="mb-3 flex items-center justify-between"><h4 class="font-semibold">Line item {{$index | addOne}}</h4><button id="receipt-remove-item-{{$index}}" type="button" class="text-sm text-red-700" onclick="removeReceiptItem({{$index}})">Remove</button></div>
+                <label for="receipt-description-{{$index}}" class="block font-semibold">Treatment</label>
+                <input id="receipt-description-{{$index}}" name="description" required value="{{$item.Description}}" class="mb-4 mt-1 w-full rounded border px-3 py-2">
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div><label for="receipt-quantity-{{$index}}" class="block font-semibold">Quantity</label><input id="receipt-quantity-{{$index}}" name="quantity" type="number" min="1" value="{{$item.Quantity}}" required class="mt-1 w-full rounded border px-3 py-2"></div>
+                    <div><label for="receipt-unit-price-{{$index}}" class="block font-semibold">Unit price (cents)</label><input id="receipt-unit-price-{{$index}}" name="unit_price" type="number" min="0" value="{{$item.UnitPrice}}" required class="mt-1 w-full rounded border px-3 py-2"></div>
+                </div>
+            </div>
+            {{end}}
         </div>
+        <button id="receipt-add-item-button" type="button" class="rounded bg-gray-200 px-3 py-2" onclick="addReceiptItem()">Add line item</button>
         <label for="receipt-discount-type" class="mt-4 block font-semibold">Discount</label>
         <select id="receipt-discount-type" name="discount_type" class="mt-1 w-full rounded border px-3 py-2"><option value="none" {{if eq .Receipt.DiscountType "none"}}selected{{end}}>None</option><option value="percent" {{if eq .Receipt.DiscountType "percent"}}selected{{end}}>Percentage</option><option value="fixed" {{if eq .Receipt.DiscountType "fixed"}}selected{{end}}>Fixed cents</option></select>
         <input id="receipt-discount-value" name="discount_value" type="number" min="0" value="{{.Receipt.DiscountValue}}" class="mt-2 w-full rounded border px-3 py-2">
     </section>
     <div class="flex gap-2"><button id="receipt-save-draft-button" type="submit" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">Save draft</button><a id="receipt-cancel-link" href="/receipts" class="rounded bg-gray-200 px-4 py-2">Cancel</a></div>
 </form>
+<script>
+let receiptItemCount = {{len .Receipt.LineItems}};
+function addReceiptItem() {
+    const index = receiptItemCount++;
+    const item = document.createElement("div");
+    item.id = "receipt-line-item-" + index;
+    item.className = "rounded border p-4";
+    item.innerHTML = '<div class="mb-3 flex items-center justify-between"><h4 class="font-semibold">Line item ' + (index + 1) + '</h4><button id="receipt-remove-item-' + index + '" type="button" class="text-sm text-red-700" onclick="removeReceiptItem(' + index + ')">Remove</button></div>' +
+        '<label for="receipt-description-' + index + '" class="block font-semibold">Treatment</label><input id="receipt-description-' + index + '" name="description" required class="mb-4 mt-1 w-full rounded border px-3 py-2">' +
+        '<div class="grid gap-4 md:grid-cols-2"><div><label for="receipt-quantity-' + index + '" class="block font-semibold">Quantity</label><input id="receipt-quantity-' + index + '" name="quantity" type="number" min="1" value="1" required class="mt-1 w-full rounded border px-3 py-2"></div><div><label for="receipt-unit-price-' + index + '" class="block font-semibold">Unit price (cents)</label><input id="receipt-unit-price-' + index + '" name="unit_price" type="number" min="0" value="0" required class="mt-1 w-full rounded border px-3 py-2"></div></div>';
+    document.getElementById("receipt-line-items").appendChild(item);
+}
+function removeReceiptItem(index) {
+    const items = document.getElementById("receipt-line-items");
+    if (items.children.length <= 1) return;
+    document.getElementById("receipt-line-item-" + index).remove();
+}
+</script>
 {{end}}

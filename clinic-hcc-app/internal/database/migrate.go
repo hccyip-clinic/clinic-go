@@ -1,5 +1,11 @@
 package database
 
+import (
+	"database/sql"
+	"fmt"
+	"strings"
+)
+
 const schemaSQL = `
 -- Patients table
 CREATE TABLE IF NOT EXISTS patients (
@@ -33,6 +39,7 @@ CREATE TABLE IF NOT EXISTS receipts (
 CREATE TABLE IF NOT EXISTS receipt_items (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	receipt_id TEXT NOT NULL,
+	position INTEGER NOT NULL,
 	description TEXT NOT NULL,
 	quantity INTEGER NOT NULL,
 	unit_price INTEGER NOT NULL,
@@ -50,6 +57,7 @@ CREATE TABLE IF NOT EXISTS settings (
 	practitioner_registration TEXT,
 	receipt_prefix TEXT DEFAULT 'RCP',
 	retention_years INTEGER DEFAULT 3,
+	password_hash TEXT NOT NULL DEFAULT '',
 	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -91,6 +99,11 @@ CREATE INDEX IF NOT EXISTS idx_receipts_status ON receipts(status);
 CREATE INDEX IF NOT EXISTS idx_patients_hkid ON patients(hkid);
 CREATE INDEX IF NOT EXISTS idx_notifications_expires ON notifications(expires_at);
 CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(is_read);
+
+CREATE TABLE IF NOT EXISTS schema_migrations (
+	version TEXT PRIMARY KEY,
+	applied_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 `
 
 func Migrate(db *DB) error {
@@ -98,8 +111,204 @@ func Migrate(db *DB) error {
 	if err != nil {
 		return err
 	}
+	if err := migrateReceiptSchema(db); err != nil {
+		return err
+	}
+	// Keep existing Phase 1 databases upgradeable.
+	if _, err := db.Exec(`ALTER TABLE settings ADD COLUMN password_hash TEXT NOT NULL DEFAULT ''`); err != nil && !strings.Contains(err.Error(), "duplicate column") {
+		return err
+	}
 
 	return SeedDefaults(db)
+}
+
+func migrateReceiptSchema(db *DB) error {
+	const version = "receipt-schema-v2"
+	var applied int
+	if err := db.QueryRow(`SELECT COUNT(*) FROM schema_migrations WHERE version = ?`, version).Scan(&applied); err != nil {
+		return err
+	}
+	if applied > 0 {
+		return nil
+	}
+
+	receiptNumberNotNull, err := columnNotNull(db, "receipts", "receipt_number")
+	if err != nil {
+		return err
+	}
+	positionExists, err := columnExists(db, "receipt_items", "position")
+	if err != nil {
+		return err
+	}
+	if receiptNumberNotNull || !positionExists {
+		if err := rebuildReceiptTables(db, receiptNumberNotNull, positionExists); err != nil {
+			return err
+		}
+	}
+	_, err = db.Exec(`INSERT INTO schema_migrations (version) VALUES (?)`, version)
+	return err
+}
+
+func columnExists(db *DB, table, column string) (bool, error) {
+	rows, err := db.Query(`PRAGMA table_info(` + table + `)`)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var cid int
+		var name, dataType string
+		var notNull, primaryKey int
+		var defaultValue sql.NullString
+		if err := rows.Scan(&cid, &name, &dataType, &notNull, &defaultValue, &primaryKey); err != nil {
+			return false, err
+		}
+		if name == column {
+			return true, nil
+		}
+	}
+	return false, rows.Err()
+}
+
+func columnNotNull(db *DB, table, column string) (bool, error) {
+	rows, err := db.Query(`PRAGMA table_info(` + table + `)`)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var cid int
+		var name, dataType string
+		var notNull, primaryKey int
+		var defaultValue sql.NullString
+		if err := rows.Scan(&cid, &name, &dataType, &notNull, &defaultValue, &primaryKey); err != nil {
+			return false, err
+		}
+		if name == column {
+			return notNull == 1, nil
+		}
+	}
+	return false, rows.Err()
+}
+
+func rebuildReceiptTables(db *DB, _, positionExists bool) (err error) {
+	if _, err := db.Exec(`PRAGMA foreign_keys = OFF`); err != nil {
+		return err
+	}
+	defer func() {
+		if restoreErr := func() error {
+			_, restoreErr := db.Exec(`PRAGMA foreign_keys = ON`)
+			return restoreErr
+		}(); restoreErr != nil && err == nil {
+			err = fmt.Errorf("restore foreign keys after migration: %w", restoreErr)
+		}
+	}()
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	var receiptCount, itemCount int
+	if err := tx.QueryRow(`SELECT COUNT(*) FROM receipts`).Scan(&receiptCount); err != nil {
+		return err
+	}
+	if err := tx.QueryRow(`SELECT COUNT(*) FROM receipt_items`).Scan(&itemCount); err != nil {
+		return err
+	}
+
+	if _, err := tx.Exec(`
+		CREATE TABLE receipts_new (
+			id TEXT PRIMARY KEY,
+			receipt_number TEXT UNIQUE,
+			patient_id TEXT NOT NULL,
+			visit_date DATE NOT NULL,
+			diagnosis TEXT,
+			subtotal INTEGER NOT NULL,
+			discount_type TEXT CHECK(discount_type IN ('percent', 'fixed', 'none')),
+			discount_value INTEGER DEFAULT 0,
+			grand_total INTEGER NOT NULL,
+			status TEXT CHECK(status IN ('draft', 'finalized', 'archived')),
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (patient_id) REFERENCES patients(id)
+		)
+	`); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`
+		INSERT INTO receipts_new (
+			id, receipt_number, patient_id, visit_date, diagnosis, subtotal,
+			discount_type, discount_value, grand_total, status, created_at, updated_at
+		)
+		SELECT id, receipt_number, patient_id, visit_date, diagnosis, subtotal,
+			discount_type, discount_value, grand_total, status, created_at, updated_at
+		FROM receipts
+	`); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`
+		CREATE TABLE receipt_items_new (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			receipt_id TEXT NOT NULL,
+			position INTEGER NOT NULL,
+			description TEXT NOT NULL,
+			quantity INTEGER NOT NULL,
+			unit_price INTEGER NOT NULL,
+			subtotal INTEGER NOT NULL,
+			FOREIGN KEY (receipt_id) REFERENCES receipts_new(id) ON DELETE CASCADE
+		)
+	`); err != nil {
+		return err
+	}
+	positionExpression := "ROW_NUMBER() OVER (PARTITION BY receipt_id ORDER BY position, id) - 1"
+	if !positionExists {
+		positionExpression = "ROW_NUMBER() OVER (PARTITION BY receipt_id ORDER BY id) - 1"
+	}
+	if _, err := tx.Exec(`
+		INSERT INTO receipt_items_new (id, receipt_id, position, description, quantity, unit_price, subtotal)
+		SELECT id, receipt_id, ` + positionExpression + `, description, quantity, unit_price, subtotal
+		FROM receipt_items
+	`); err != nil {
+		return err
+	}
+	var migratedReceiptCount, migratedItemCount int
+	if err := tx.QueryRow(`SELECT COUNT(*) FROM receipts_new`).Scan(&migratedReceiptCount); err != nil {
+		return err
+	}
+	if err := tx.QueryRow(`SELECT COUNT(*) FROM receipt_items_new`).Scan(&migratedItemCount); err != nil {
+		return err
+	}
+	if migratedReceiptCount != receiptCount || migratedItemCount != itemCount {
+		return fmt.Errorf("receipt migration row count mismatch: receipts %d/%d, items %d/%d", migratedReceiptCount, receiptCount, migratedItemCount, itemCount)
+	}
+	if _, err := tx.Exec(`DROP TABLE receipt_items; DROP TABLE receipts;`); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(`ALTER TABLE receipts_new RENAME TO receipts; ALTER TABLE receipt_items_new RENAME TO receipt_items;`); err != nil {
+		return err
+	}
+	foreignKeyRows, err := tx.Query(`PRAGMA foreign_key_check`)
+	if err != nil {
+		return err
+	}
+	defer foreignKeyRows.Close()
+	if foreignKeyRows.Next() {
+		return fmt.Errorf("receipt migration produced a foreign-key violation")
+	}
+	if err := foreignKeyRows.Err(); err != nil {
+		return err
+	}
+	for _, statement := range []string{
+		`CREATE INDEX IF NOT EXISTS idx_receipts_patient ON receipts(patient_id)`,
+		`CREATE INDEX IF NOT EXISTS idx_receipts_visit_date ON receipts(visit_date)`,
+		`CREATE INDEX IF NOT EXISTS idx_receipts_status ON receipts(status)`,
+	} {
+		if _, err := tx.Exec(statement); err != nil {
+			return err
+		}
+	}
+	return tx.Commit()
 }
 
 func SeedDefaults(db *DB) error {

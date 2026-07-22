@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Go 1.21 or later
-- SQLite 3
+- SQLite 3 (embedded through `modernc.org/sqlite`; no CGO dependency)
 - Node.js 18+ (for TailwindCSS CLI)
 - `air` (optional, for hot reload)
 
@@ -21,14 +21,14 @@ go mod init clinic-hcc-app
 
 ```bash
 # Go dependencies
-go get github.com/mattn/go-sqlite3
 go get github.com/go-chi/chi/v5
+go get modernc.org/sqlite
 
 # Optional: hot reload for development
 go install github.com/cosmtrek/air@latest
 
 # TailwindCSS
-npm install -D tailwindcss @tailwindcss/vite
+npm install -D tailwindcss @tailwindcss/cli
 ```
 
 ### 3. Directory Structure
@@ -42,13 +42,15 @@ clinic-hcc-app/
 
 ## Database Setup
 
-### Create Schema
+### Initialize the Database
 
 ```bash
-sqlite3 data/clinic.db < schema.sql
+go run ./cmd/server
 ```
 
-**schema.sql:**
+The server creates and migrates `data/clinic.db` on startup. Existing databases are upgraded in place; do not recreate them manually.
+
+The effective receipt schema includes:
 ```sql
 -- See docs/prototype-spec.md for full schema
 CREATE TABLE patients (
@@ -62,7 +64,7 @@ CREATE TABLE patients (
 
 CREATE TABLE receipts (
     id TEXT PRIMARY KEY,
-    receipt_number TEXT UNIQUE NOT NULL,
+    receipt_number TEXT UNIQUE,
     patient_id TEXT NOT NULL,
     visit_date DATE NOT NULL,
     diagnosis TEXT,
@@ -128,8 +130,8 @@ func main() {
     r.Post("/settings", h.SettingsUpdate)
 
     // Start server
-    log.Println("Starting server on http://localhost:8080")
-    log.Fatal(http.ListenAndServe(":8080", r))
+    log.Println("Starting server on http://127.0.0.1:8080")
+    log.Fatal(http.ListenAndServe("127.0.0.1:8080", r))
 }
 ```
 
@@ -494,5 +496,5 @@ Check:
 
 - **HTMX Reference**: https://htmx.org/reference/
 - **TailwindCSS v4**: https://tailwindcss.com/docs
-- **Go SQLite**: https://github.com/mattn/go-sqlite3
+- **Go SQLite**: https://pkg.go.dev/modernc.org/sqlite
 - **Chi Router**: https://github.com/go-chi/chi
