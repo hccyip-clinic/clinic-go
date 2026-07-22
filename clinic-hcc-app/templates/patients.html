@@ -1,0 +1,24 @@
+{{define "content"}}
+<section class="rounded-xl bg-white p-6 shadow">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <form id="patient-search-form" method="get" action="/patients" class="flex gap-2">
+            <label class="sr-only" for="patient-search">Search patients</label>
+            <input id="patient-search" name="q" value="{{.Query}}" placeholder="Name or HKID" class="rounded border px-3 py-2">
+            <button id="patient-search-button" type="submit" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">Search</button>
+        </form>
+        <a id="new-patient-link" href="/patients/new" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">New patient</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead><tr class="border-b"><th class="p-3">Name</th><th class="p-3">HKID</th><th class="p-3">Gender</th></tr></thead>
+            <tbody>
+            {{range .Patients}}
+            <tr class="border-b"><td class="p-3">{{.Name}}</td><td class="p-3">{{.HKID}}</td><td class="p-3">{{.Gender}}</td></tr>
+            {{else}}
+            <tr><td colspan="3" class="p-3 text-gray-500">No patients found.</td></tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+</section>
+{{end}}

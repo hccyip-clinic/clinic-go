@@ -82,9 +82,12 @@ func TestValidateReceipt(t *testing.T) {
 }
 
 func TestGenerateReceiptNumber(t *testing.T) {
-	number := GenerateReceiptNumber("RCP")
+	number, err := GenerateReceiptNumber("RCP")
+	if err != nil {
+		t.Fatalf("GenerateReceiptNumber failed: %v", err)
+	}
 
-	if len(number) != 18 {
-		t.Errorf("Receipt number length should be 18, got %d", len(number))
+	if len(number) != 19 {
+		t.Errorf("Receipt number length should be 19, got %d", len(number))
 	}
 }

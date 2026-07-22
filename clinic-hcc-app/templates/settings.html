@@ -1,0 +1,9 @@
+{{define "content"}}
+<form id="settings-form" method="post" action="/settings" class="max-w-2xl rounded-xl bg-white p-6 shadow">
+    <label for="settings-clinic-name" class="block font-semibold">Clinic name</label><input id="settings-clinic-name" name="clinic_name" value="{{.Settings.ClinicName}}" required class="mb-4 mt-1 w-full rounded border px-3 py-2">
+    <label for="settings-address" class="block font-semibold">Address</label><input id="settings-address" name="address" value="{{.Settings.Address}}" class="mb-4 mt-1 w-full rounded border px-3 py-2">
+    <label for="settings-phone" class="block font-semibold">Phone</label><input id="settings-phone" name="phone" value="{{.Settings.Phone}}" class="mb-4 mt-1 w-full rounded border px-3 py-2">
+    <label for="settings-practitioner" class="block font-semibold">Practitioner</label><input id="settings-practitioner" name="practitioner" value="{{.Settings.Practitioner}}" required class="mb-6 mt-1 w-full rounded border px-3 py-2">
+    <button id="settings-save-button" type="submit" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">Save settings</button>
+</form>
+{{end}}

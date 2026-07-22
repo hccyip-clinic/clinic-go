@@ -51,7 +51,7 @@ Daily at midnight → Mask patient data → Write delta backup → Enforce 30-da
 
 **Receipt:** A patient visit record with clinical and financial information. Lifecycle: draft → finalized → archived.
 
-**HKID:** Hong Kong Identity Card number. Format: `[A-Z]{1,2}[0-9]{6}([0-9A])`. Validated with check digit algorithm.
+**HKID:** Hong Kong Identity Card number. Input may contain spaces or hyphens, but is normalized to uppercase canonical form `[A-Z]{1,2}[0-9]{6}([0-9A])` before validation and storage. Both one- and two-letter prefixes use the official check digit algorithm.
 
 **Financial Year:** April 1 — March 31 (Hong Kong standard).
 
@@ -84,6 +84,8 @@ Daily at midnight → Mask patient data → Write delta backup → Enforce 30-da
 **Session:** In-memory session store with httpOnly cookie expiry. Single-user desktop app — restart clears sessions.
 
 **Clinic Settings:** Single-row SQLite table (`clinic_settings`) storing clinic name, address, telephone. Default from `config.json` on first run.
+
+**Patient Identity:** A patient has one unique canonical HKID. Names and gender may be updated, but the HKID is immutable after creation in Phase 1.
 
 ---
 

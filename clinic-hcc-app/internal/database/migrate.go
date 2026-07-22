@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS patients (
 -- Receipts table
 CREATE TABLE IF NOT EXISTS receipts (
 	id TEXT PRIMARY KEY,
-	receipt_number TEXT UNIQUE NOT NULL,
+	receipt_number TEXT UNIQUE,
 	patient_id TEXT NOT NULL,
 	visit_date DATE NOT NULL,
 	diagnosis TEXT,

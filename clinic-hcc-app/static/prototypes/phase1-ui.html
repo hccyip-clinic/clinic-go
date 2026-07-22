@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PROTOTYPE - Phase 1 UI Slice</title>
+  <style>
+    :root { color-scheme: light; font: 16px/1.5 system-ui, sans-serif; color: #172033; background: #eef2f7; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px 32px 96px; }
+    main { max-width: 1120px; margin: auto; }
+    header, section, .panel, .step, .patient, table { background: #fff; border: 1px solid #d9e0ea; border-radius: 14px; }
+    header { padding: 24px; margin-bottom: 20px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 4px; }
+    .muted { color: #667085; }
+    .grid { display: grid; gap: 16px; }
+    .two { grid-template-columns: 1fr 1fr; }
+    .three { grid-template-columns: repeat(3, 1fr); }
+    .panel, .step, .patient, section { padding: 20px; }
+    label { display: block; margin: 12px 0 5px; font-weight: 650; }
+    input, select { width: 100%; padding: 10px 12px; border: 1px solid #bcc7d6; border-radius: 8px; font: inherit; }
+    button { border: 0; border-radius: 8px; padding: 10px 14px; font: inherit; font-weight: 700; cursor: pointer; background: #175cd3; color: #fff; }
+    button.secondary { color: #344054; background: #e9eef5; }
+    .actions { display: flex; gap: 8px; margin-top: 20px; }
+    .steps { display: flex; gap: 8px; margin-bottom: 16px; }
+    .steps span { padding: 8px 12px; border-radius: 999px; background: #e9eef5; color: #475467; }
+    .steps .active { background: #d1e9ff; color: #175cd3; font-weight: 700; }
+    .stack > * + * { margin-top: 12px; }
+    .split { display: grid; grid-template-columns: 260px 1fr; gap: 16px; }
+    .patient { cursor: pointer; }
+    .patient.selected { border-color: #175cd3; box-shadow: 0 0 0 2px #b2ddff; }
+    .amount { font-size: 2rem; font-weight: 800; color: #175cd3; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; overflow: hidden; }
+    th, td { text-align: left; padding: 14px; border-bottom: 1px solid #eaecf0; }
+    th { background: #f8fafc; }
+    tr:last-child td { border-bottom: 0; }
+    #switcher { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 999px; background: #101828; color: #fff; box-shadow: 0 8px 24px #10182855; }
+    #switcher button { padding: 6px 10px; background: #344054; }
+    @media (max-width: 760px) { body { padding: 16px 16px 96px; } .two, .three, .split { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main id="app"></main>
+  <nav id="switcher" aria-label="Prototype variants">
+    <button id="previous" type="button" aria-label="Previous variant">&larr;</button>
+    <span id="variant-label"></span>
+    <button id="next" type="button" aria-label="Next variant">&rarr;</button>
+  </nav>
+  <script src="/static/js/htmx.min.js"></script>
+  <script>
+    // PROTOTYPE: three first-slice layouts, switchable with ?variant=A|B|C.
+    const variants = {
+      A: {
+        name: "Guided flow",
+        render: () => `
+          <header><p class="muted">Clinic HCC / New receipt</p><h1>Create receipt</h1><p class="muted">A focused flow for the practitioner completing one visit.</p></header>
+          <div class="steps"><span class="active">1 Patient</span><span>2 Visit</span><span>3 Charges</span><span>4 Review</span></div>
+          <section class="grid two">
+            <div><h2>Patient details</h2><label for="a-name">Name</label><input id="a-name" value="Chan Tai Man"><label for="a-hkid">HKID</label><input id="a-hkid" value="A123456(7)"><label for="a-gender">Gender</label><select id="a-gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+            <div class="panel"><h2>Selected patient</h2><p><strong>Chan Tai Man</strong></p><p class="muted">A123456(7)<br>3 previous visits</p><button type="button">Use patient</button></div>
+          </section>
+          <div class="actions"><button type="button">Continue to visit</button><button class="secondary" type="button">Save draft</button></div>`,
+      },
+      B: {
+        name: "Workspace",
+        render: () => `
+          <header><p class="muted">Receipts / Draft RCP-NEW</p><h1>Visit workspace</h1><p class="muted">Keep patient context visible while entering the receipt.</p></header>
+          <div class="split">
+            <aside class="panel stack"><h2>Find patient</h2><label for="b-search">Name or HKID</label><input id="b-search" placeholder="Search patients"><div class="patient selected"><strong>Chan Tai Man</strong><br><span class="muted">A123456(7)</span></div><div class="patient"><strong>Lee Wai Ming</strong><br><span class="muted">AB234567(3)</span></div><button class="secondary" type="button">New patient</button></aside>
+            <section><h2>Receipt charges</h2><div class="grid two"><div><label for="b-date">Visit date</label><input id="b-date" type="date" value="2026-07-22"></div><div><label for="b-diagnosis">Diagnosis</label><input id="b-diagnosis" value="Neck pain"></div></div><table><thead><tr><th>Treatment</th><th>Qty</th><th>Unit price</th></tr></thead><tbody><tr><td>Tui Na</td><td>1</td><td>$600.00</td></tr><tr><td>Acupuncture</td><td>1</td><td>$400.00</td></tr></tbody></table><p class="amount">$1,000.00</p><div class="actions"><button type="button">Save draft</button><button class="secondary" type="button">Finalize</button></div></section>
+          </div>`,
+      },
+      C: {
+        name: "Queue first",
+        render: () => `
+          <header><p class="muted">Today / Receipts</p><h1>Receipt queue</h1><p class="muted">Start from the daily work queue, then open or create a receipt.</p><div class="actions"><button type="button">Create receipt</button><button class="secondary" type="button">Search patients</button></div></header>
+          <section><div class="grid three"><div><p class="muted">Drafts</p><h2>2</h2></div><div><p class="muted">Finalized today</p><h2>8</h2></div><div><p class="muted">Revenue today</p><h2>$4,800</h2></div></div><table><thead><tr><th>Patient</th><th>Status</th><th>Total</th><th>Action</th></tr></thead><tbody><tr><td>Chan Tai Man<br><span class="muted">Draft</span></td><td>Draft</td><td>-</td><td><button class="secondary" type="button">Continue</button></td></tr><tr><td>Lee Wai Ming<br><span class="muted">RCP-20260722-A3F2B</span></td><td>Finalized</td><td>$800.00</td><td><button class="secondary" type="button">View</button></td></tr></tbody></table></section>`,
+      }
+    };
+    const keys = Object.keys(variants);
+    const params = new URLSearchParams(location.search);
+    let current = keys.includes(params.get("variant")) ? params.get("variant") : "A";
+    const app = document.getElementById("app");
+    const label = document.getElementById("variant-label");
+    function show(key) {
+      current = key;
+      app.innerHTML = variants[key].render();
+      label.textContent = `${key} - ${variants[key].name}`;
+      const nextParams = new URLSearchParams(location.search);
+      nextParams.set("variant", key);
+      history.replaceState(null, "", `${location.pathname}?${nextParams}`);
+    }
+    function move(delta) { show(keys[(keys.indexOf(current) + delta + keys.length) % keys.length]); }
+    document.getElementById("previous").onclick = () => move(-1);
+    document.getElementById("next").onclick = () => move(1);
+    document.addEventListener("keydown", event => {
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
+      if (event.key === "ArrowLeft") move(-1);
+      if (event.key === "ArrowRight") move(1);
+    });
+    show(current);
+  </script>
+</body>
+</html>

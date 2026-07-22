@@ -9,10 +9,10 @@ func TestValidateHKIDFormat(t *testing.T) {
 		hkid     string
 		expected bool
 	}{
-		{"A123456(7)", true},
-		{"AB123456(7)", true},
-		{"a123456(7)", true},
-		{"A123456(8)", false},
+		{"A123456(8)", true},
+		{"AB123456(9)", true},
+		{"a 123-456(8)", true},
+		{"A123456(7)", false},
 		{"A123456", false},
 		{"1234567(8)", false},
 		{"ABC12345(6)", false},
@@ -33,8 +33,8 @@ func TestCalculateHKIDCheckDigit(t *testing.T) {
 		hkid     string
 		expected rune
 	}{
-		{"A123456", '7'},
-		{"AB123456", '4'},
+		{"A123456", '8'},
+		{"AB123456", '9'},
 	}
 
 	for _, tt := range tests {
@@ -48,9 +48,9 @@ func TestCalculateHKIDCheckDigit(t *testing.T) {
 }
 
 func TestHashHKID(t *testing.T) {
-	hkid1 := "A123456(7)"
-	hkid2 := "a123456(7)"
-	hkid3 := "A1234567"
+	hkid1 := "A123456(8)"
+	hkid2 := "a123456(8)"
+	hkid3 := "A1234568"
 
 	hash1 := HashHKID(hkid1)
 	hash2 := HashHKID(hkid2)
@@ -65,9 +65,9 @@ func TestHashHKID(t *testing.T) {
 }
 
 func TestMaskHKID(t *testing.T) {
-	hkid := "A123456(7)"
+	hkid := "A123456(8)"
 	masked := MaskHKID(hkid)
-	expected := "A*****6(7)"
+	expected := "A*****6(8)"
 
 	if masked != expected {
 		t.Errorf("MaskHKID(%s) = %s, expected %s", hkid, masked, expected)

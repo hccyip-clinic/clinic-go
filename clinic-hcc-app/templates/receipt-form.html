@@ -1,0 +1,33 @@
+{{define "content"}}
+<form id="receipt-form" method="post" action="{{if .Receipt.ID}}/receipts/{{.Receipt.ID}}{{else}}/receipts{{end}}" class="max-w-3xl space-y-6">
+    {{if .Error}}<p id="receipt-form-error" class="rounded bg-red-50 p-3 text-red-700">{{.Error}}</p>{{end}}
+    <section class="rounded-xl bg-white p-6 shadow">
+        <h3 class="mb-4 text-xl font-bold">1. Patient</h3>
+        <label for="receipt-patient" class="block font-semibold">Patient</label>
+        <select id="receipt-patient" name="patient_id" required class="mt-1 w-full rounded border px-3 py-2">
+            <option value="">Select patient</option>
+            {{range .Patients}}<option value="{{.ID}}" {{if eq .ID $.Receipt.PatientID}}selected{{end}}>{{.Name}} - {{.HKID}}</option>{{end}}
+        </select>
+    </section>
+    <section class="rounded-xl bg-white p-6 shadow">
+        <h3 class="mb-4 text-xl font-bold">2. Visit</h3>
+        <label for="receipt-visit-date" class="block font-semibold">Visit date</label>
+        <input id="receipt-visit-date" name="visit_date" type="date" required value="{{.Receipt.VisitDate}}" class="mb-4 mt-1 w-full rounded border px-3 py-2">
+        <label for="receipt-diagnosis" class="block font-semibold">Diagnosis</label>
+        <input id="receipt-diagnosis" name="diagnosis" value="{{.Receipt.Diagnosis}}" class="mt-1 w-full rounded border px-3 py-2">
+    </section>
+    <section class="rounded-xl bg-white p-6 shadow">
+        <h3 class="mb-4 text-xl font-bold">3. Charges</h3>
+        <label for="receipt-description" class="block font-semibold">Treatment</label>
+        <input id="receipt-description" name="description" required value="{{with index .Receipt.LineItems 0}}{{.Description}}{{end}}" class="mb-4 mt-1 w-full rounded border px-3 py-2">
+        <div class="grid gap-4 md:grid-cols-2">
+            <div><label for="receipt-quantity" class="block font-semibold">Quantity</label><input id="receipt-quantity" name="quantity" type="number" min="1" value="{{with index .Receipt.LineItems 0}}{{.Quantity}}{{else}}1{{end}}" required class="mt-1 w-full rounded border px-3 py-2"></div>
+            <div><label for="receipt-unit-price" class="block font-semibold">Unit price (cents)</label><input id="receipt-unit-price" name="unit_price" type="number" min="0" value="{{with index .Receipt.LineItems 0}}{{.UnitPrice}}{{else}}0{{end}}" required class="mt-1 w-full rounded border px-3 py-2"></div>
+        </div>
+        <label for="receipt-discount-type" class="mt-4 block font-semibold">Discount</label>
+        <select id="receipt-discount-type" name="discount_type" class="mt-1 w-full rounded border px-3 py-2"><option value="none">None</option><option value="percent">Percentage</option><option value="fixed">Fixed cents</option></select>
+        <input id="receipt-discount-value" name="discount_value" type="number" min="0" value="{{.Receipt.DiscountValue}}" class="mt-2 w-full rounded border px-3 py-2">
+    </section>
+    <div class="flex gap-2"><button id="receipt-save-draft-button" type="submit" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">Save draft</button><a id="receipt-cancel-link" href="/receipts" class="rounded bg-gray-200 px-4 py-2">Cancel</a></div>
+</form>
+{{end}}

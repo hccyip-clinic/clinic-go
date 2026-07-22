@@ -1,0 +1,17 @@
+{{define "content"}}
+<section class="rounded-xl bg-white p-6 shadow">
+    <div class="mb-6 flex items-center justify-between"><p class="text-gray-600">Drafts can be edited; finalized receipts are immutable.</p><a id="new-receipt-link" href="/receipts/new" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">New receipt</a></div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead><tr class="border-b"><th class="p-3">Visit date</th><th class="p-3">Receipt number</th><th class="p-3">Status</th><th class="p-3">Total</th><th class="p-3">Action</th></tr></thead>
+            <tbody>
+            {{range .Receipts}}
+            <tr class="border-b"><td class="p-3">{{.VisitDate}}</td><td class="p-3">{{if .ReceiptNumber}}{{.ReceiptNumber}}{{else}}Draft{{end}}</td><td class="p-3">{{.Status}}</td><td class="p-3">{{money .GrandTotal}}</td><td class="p-3"><a id="receipt-view-{{.ID}}" href="/receipts/{{.ID}}" class="text-blue-700">View</a></td></tr>
+            {{else}}
+            <tr><td colspan="5" class="p-3 text-gray-500">No receipts found.</td></tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+</section>
+{{end}}

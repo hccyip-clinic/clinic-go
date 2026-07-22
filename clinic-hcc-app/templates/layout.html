@@ -1,0 +1,30 @@
+{{define "layout.html"}}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}} - Clinic HCC</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="/static/js/htmx.min.js"></script>
+</head>
+<body class="min-h-screen bg-gray-100 text-gray-900">
+    <aside class="fixed inset-y-0 left-0 hidden w-64 bg-white p-6 shadow-lg md:block">
+        <h1 class="mb-8 text-xl font-bold">Clinic HCC</h1>
+        <nav aria-label="Primary navigation" class="space-y-2">
+            <a id="nav-dashboard" href="/" class="block rounded px-3 py-2 hover:bg-gray-100">Dashboard</a>
+            <a id="nav-receipts" href="/receipts" class="block rounded px-3 py-2 hover:bg-gray-100">Receipts</a>
+            <a id="nav-patients" href="/patients" class="block rounded px-3 py-2 hover:bg-gray-100">Patients</a>
+            <a id="nav-settings" href="/settings" class="block rounded px-3 py-2 hover:bg-gray-100">Settings</a>
+        </nav>
+    </aside>
+    <main class="mx-auto max-w-6xl p-4 md:ml-64 md:p-8">
+        <header class="mb-6">
+            <p class="text-sm text-gray-500">Hong Ching Clinic</p>
+            <h2 class="text-3xl font-bold">{{.Title}}</h2>
+        </header>
+        {{template "content" .}}
+    </main>
+</body>
+</html>
+{{end}}
