@@ -1,6 +1,6 @@
 # HCC Clinic
 
-## mattpocock skills
+## mattpocock 
 
 - <https://github.com/mattpocock/skills>
 
@@ -13,7 +13,10 @@ how to write go unit test?
 what is the current implmentation phase, anything still unclear? 
 
 anything still unclear in this grill? 
+anything still unclear in this phase? 
 
+/wayfinder
+lookup from quickstart, are we on the right direction?
 
 ---
 npx skills add mattpocock/skills
