@@ -3,15 +3,15 @@ package models
 import "fmt"
 
 type Settings struct {
-	ID                     int
-	ClinicName             string
-	ClinicAddress          string
-	ClinicPhone            string
-	PractitionerName       string
+	ID                       int
+	ClinicName               string
+	ClinicAddress            string
+	ClinicPhone              string
+	PractitionerName         string
 	PractitionerRegistration string
-	ReceiptPrefix          string
-	RetentionYears         int
-	UpdatedAt              string
+	ReceiptPrefix            string
+	RetentionYears           int
+	UpdatedAt                string
 }
 
 func ValidateSettings(s *Settings) []string {

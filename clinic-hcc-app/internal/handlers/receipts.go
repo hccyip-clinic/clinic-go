@@ -10,7 +10,15 @@ import (
 )
 
 func (r *Router) ReceiptList(w http.ResponseWriter, req *http.Request) {
-	receipts, err := r.receipts.List(req.Context())
+	var (
+		receipts []models.Receipt
+		err      error
+	)
+	if req.URL.Query().Get("date") == "today" {
+		receipts, err = r.receipts.ListToday(req.Context())
+	} else {
+		receipts, err = r.receipts.List(req.Context())
+	}
 	if err != nil {
 		http.Error(w, "unable to load receipts", http.StatusInternalServerError)
 		return

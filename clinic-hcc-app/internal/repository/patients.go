@@ -62,10 +62,34 @@ func (r *PatientRepository) Get(ctx context.Context, id string) (*models.Patient
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, ErrPatientNotFound
 	}
+
 	if err != nil {
 		return nil, err
 	}
 	return patient, nil
+}
+
+func (r *PatientRepository) Update(ctx context.Context, patient *models.Patient) error {
+	patient.Name = strings.TrimSpace(patient.Name)
+	if patient.Name == "" {
+		return errors.New("patient name is required")
+	}
+	if patient.Gender != "M" && patient.Gender != "F" && patient.Gender != "O" {
+		return errors.New("patient gender must be M, F, or O")
+	}
+	result, err := r.db.ExecContext(ctx, `
+		UPDATE patients SET name = ?, gender = ?, updated_at = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`, patient.Name, patient.Gender, patient.ID)
+	if err != nil {
+		return err
+	}
+	if count, err := result.RowsAffected(); err != nil {
+		return err
+	} else if count == 0 {
+		return ErrPatientNotFound
+	}
+	return nil
 }
 
 func (r *PatientRepository) Search(ctx context.Context, query string) ([]models.Patient, error) {

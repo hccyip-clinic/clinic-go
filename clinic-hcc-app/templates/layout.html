@@ -14,13 +14,13 @@
         <nav aria-label="Primary navigation" class="space-y-2">
             <a id="nav-dashboard" href="/" class="block rounded px-3 py-2 hover:bg-gray-100">Dashboard</a>
             <a id="nav-receipts" href="/receipts" class="block rounded px-3 py-2 hover:bg-gray-100">Receipts</a>
-            <a id="nav-patients" href="/patients" class="block rounded px-3 py-2 hover:bg-gray-100">Patients</a>
+            <a id="nav-patients" href="/patients/search" class="block rounded px-3 py-2 hover:bg-gray-100">Patients</a>
             <a id="nav-settings" href="/settings" class="block rounded px-3 py-2 hover:bg-gray-100">Settings</a>
         </nav>
     </aside>
     <main class="mx-auto max-w-6xl p-4 md:ml-64 md:p-8">
         <header class="mb-6">
-            <p class="text-sm text-gray-500">Hong Ching Clinic</p>
+            <p class="text-sm text-gray-500">{{.ClinicName}}</p>
             <h2 class="text-3xl font-bold">{{.Title}}</h2>
         </header>
         {{template "content" .}}

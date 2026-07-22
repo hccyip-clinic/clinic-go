@@ -9,6 +9,12 @@ import (
 )
 
 func (r *Router) render(w http.ResponseWriter, page string, data map[string]interface{}) {
+	var clinicName string
+	if err := r.db.QueryRow(`SELECT clinic_name FROM settings WHERE id = 1`).Scan(&clinicName); err != nil {
+		http.Error(w, "unable to load clinic settings", http.StatusInternalServerError)
+		return
+	}
+	data["ClinicName"] = clinicName
 	data["User"] = models.DefaultUser()
 	tmpl, err := template.New("layout.html").Funcs(template.FuncMap{
 		"money": models.FormatMoney,

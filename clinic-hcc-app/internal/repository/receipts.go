@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"clinic-hcc-app/internal/database"
 	"clinic-hcc-app/internal/models"
@@ -101,6 +102,34 @@ func (r *ReceiptRepository) List(ctx context.Context) ([]models.Receipt, error) 
 			subtotal, discount_type, discount_value, grand_total, status, created_at, updated_at
 		FROM receipts ORDER BY visit_date DESC, created_at DESC
 	`)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var receipts []models.Receipt
+	for rows.Next() {
+		var receipt models.Receipt
+		if err := rows.Scan(
+			&receipt.ID, &receipt.ReceiptNumber, &receipt.PatientID, &receipt.VisitDate,
+			&receipt.Diagnosis, &receipt.Subtotal, &receipt.DiscountType, &receipt.DiscountValue,
+			&receipt.GrandTotal, &receipt.Status, &receipt.CreatedAt, &receipt.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		receipts = append(receipts, receipt)
+	}
+	return receipts, rows.Err()
+}
+
+func (r *ReceiptRepository) ListToday(ctx context.Context) ([]models.Receipt, error) {
+	today := time.Now().Format("2006-01-02")
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT id, COALESCE(receipt_number, ''), patient_id, visit_date, diagnosis,
+			subtotal, discount_type, discount_value, grand_total, status, created_at, updated_at
+		FROM receipts WHERE visit_date = ? ORDER BY created_at DESC
+	`, today)
 	if err != nil {
 		return nil, err
 	}

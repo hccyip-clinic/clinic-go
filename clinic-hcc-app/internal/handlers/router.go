@@ -50,6 +50,9 @@ func (r *Router) Setup() http.Handler {
 	mux.Get("/patients", r.PatientList)
 	mux.Get("/patients/new", r.PatientFormNew)
 	mux.Post("/patients", r.PatientCreate)
+	mux.Get("/patients/{id}/edit", r.PatientFormEdit)
+	mux.Post("/patients/{id}", r.PatientUpdate)
+	mux.Get("/patients/search", r.PatientList)
 	mux.Get("/settings", r.Settings)
 	mux.Post("/settings", r.SettingsUpdate)
 

@@ -1,10 +1,10 @@
 {{define "content"}}
-<form id="patient-form" method="post" action="/patients" class="max-w-2xl rounded-xl bg-white p-6 shadow">
+<form id="patient-form" method="post" action="{{if .Patient.ID}}/patients/{{.Patient.ID}}{{else}}/patients{{end}}" class="max-w-2xl rounded-xl bg-white p-6 shadow">
     {{if .Error}}<p id="patient-form-error" class="mb-4 rounded bg-red-50 p-3 text-red-700">{{.Error}}</p>{{end}}
     <label for="patient-name" class="block font-semibold">Full name</label>
     <input id="patient-name" name="name" required value="{{.Patient.Name}}" class="mb-4 mt-1 w-full rounded border px-3 py-2">
     <label for="patient-hkid" class="block font-semibold">HKID</label>
-    <input id="patient-hkid" name="hkid" required value="{{.Patient.HKID}}" placeholder="A123456(8)" class="mb-4 mt-1 w-full rounded border px-3 py-2">
+    <input id="patient-hkid" name="hkid" required value="{{.Patient.HKID}}" placeholder="A123456(8)" {{if .Patient.ID}}readonly{{end}} class="mb-4 mt-1 w-full rounded border px-3 py-2">
     <label for="patient-gender" class="block font-semibold">Gender</label>
     <select id="patient-gender" name="gender" required class="mb-6 mt-1 w-full rounded border px-3 py-2">
         <option value="M" {{if eq .Patient.Gender "M"}}selected{{end}}>Male</option>

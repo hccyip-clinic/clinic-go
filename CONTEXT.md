@@ -77,7 +77,7 @@ Daily at midnight → Mask patient data → Write delta backup → Enforce 30-da
 
 **Notifications:** System-generated alerts categorized as Critical/Warning/Info (persistent, stored in SQLite, 7-day retention) or Success/Fail (ephemeral flash messages). Bell badge shows unread critical + fail count for today.
 
-**Permissions:** Direct permission strings assigned to users (e.g., `receipts:create`, `patients:read`). No role abstraction in Phase 1. Defined as Go constants in `handlers/permissions.go`.
+**Permissions:** Direct permission strings assigned to users (e.g., `receipts:create`, `patients:read`). No role abstraction in Phase 1. Defined as Go constants in the user model and exposed to handlers.
 
 **Financial Week:** Monday–Saturday (Hong Kong business week). Dashboard weekly metrics chart shows Mon→Today.
 

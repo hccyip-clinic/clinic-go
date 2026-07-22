@@ -25,7 +25,7 @@
             <div><label for="receipt-unit-price" class="block font-semibold">Unit price (cents)</label><input id="receipt-unit-price" name="unit_price" type="number" min="0" value="{{with index .Receipt.LineItems 0}}{{.UnitPrice}}{{else}}0{{end}}" required class="mt-1 w-full rounded border px-3 py-2"></div>
         </div>
         <label for="receipt-discount-type" class="mt-4 block font-semibold">Discount</label>
-        <select id="receipt-discount-type" name="discount_type" class="mt-1 w-full rounded border px-3 py-2"><option value="none">None</option><option value="percent">Percentage</option><option value="fixed">Fixed cents</option></select>
+        <select id="receipt-discount-type" name="discount_type" class="mt-1 w-full rounded border px-3 py-2"><option value="none" {{if eq .Receipt.DiscountType "none"}}selected{{end}}>None</option><option value="percent" {{if eq .Receipt.DiscountType "percent"}}selected{{end}}>Percentage</option><option value="fixed" {{if eq .Receipt.DiscountType "fixed"}}selected{{end}}>Fixed cents</option></select>
         <input id="receipt-discount-value" name="discount_value" type="number" min="0" value="{{.Receipt.DiscountValue}}" class="mt-2 w-full rounded border px-3 py-2">
     </section>
     <div class="flex gap-2"><button id="receipt-save-draft-button" type="submit" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">Save draft</button><a id="receipt-cancel-link" href="/receipts" class="rounded bg-gray-200 px-4 py-2">Cancel</a></div>

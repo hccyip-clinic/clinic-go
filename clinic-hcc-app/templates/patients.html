@@ -10,12 +10,12 @@
     </div>
     <div class="overflow-x-auto">
         <table class="w-full text-left">
-            <thead><tr class="border-b"><th class="p-3">Name</th><th class="p-3">HKID</th><th class="p-3">Gender</th></tr></thead>
+            <thead><tr class="border-b"><th class="p-3">Name</th><th class="p-3">HKID</th><th class="p-3">Gender</th><th class="p-3">Action</th></tr></thead>
             <tbody>
             {{range .Patients}}
-            <tr class="border-b"><td class="p-3">{{.Name}}</td><td class="p-3">{{.HKID}}</td><td class="p-3">{{.Gender}}</td></tr>
+            <tr class="border-b"><td class="p-3">{{.Name}}</td><td class="p-3">{{.HKID}}</td><td class="p-3">{{.Gender}}</td><td class="p-3"><a id="patient-edit-{{.ID}}" href="/patients/{{.ID}}/edit" class="text-blue-700">Edit</a></td></tr>
             {{else}}
-            <tr><td colspan="3" class="p-3 text-gray-500">No patients found.</td></tr>
+            <tr><td colspan="4" class="p-3 text-gray-500">No patients found.</td></tr>
             {{end}}
             </tbody>
         </table>

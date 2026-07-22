@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"clinic-hcc-app/internal/models"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func (r *Router) PatientList(w http.ResponseWriter, req *http.Request) {
@@ -33,6 +35,19 @@ func (r *Router) PatientFormNew(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
+func (r *Router) PatientFormEdit(w http.ResponseWriter, req *http.Request) {
+	patient, err := r.patients.Get(req.Context(), chi.URLParam(req, "id"))
+	if err != nil {
+		http.Error(w, "patient not found", http.StatusNotFound)
+		return
+	}
+	r.render(w, "patient-form", map[string]interface{}{
+		"Title":      "Edit Patient",
+		"ActivePage": "patients",
+		"Patient":    patient,
+	})
+}
+
 func (r *Router) PatientCreate(w http.ResponseWriter, req *http.Request) {
 	if err := req.ParseForm(); err != nil {
 		http.Error(w, "invalid form", http.StatusBadRequest)
@@ -46,6 +61,30 @@ func (r *Router) PatientCreate(w http.ResponseWriter, req *http.Request) {
 	if err := r.patients.Create(req.Context(), patient); err != nil {
 		r.render(w, "patient-form", map[string]interface{}{
 			"Title":      "New Patient",
+			"ActivePage": "patients",
+			"Patient":    patient,
+			"Error":      err.Error(),
+		})
+		return
+	}
+	http.Redirect(w, req, "/patients", http.StatusSeeOther)
+}
+
+func (r *Router) PatientUpdate(w http.ResponseWriter, req *http.Request) {
+	if err := req.ParseForm(); err != nil {
+		http.Error(w, "invalid form", http.StatusBadRequest)
+		return
+	}
+	patient, err := r.patients.Get(req.Context(), chi.URLParam(req, "id"))
+	if err != nil {
+		http.Error(w, "patient not found", http.StatusNotFound)
+		return
+	}
+	patient.Name = req.FormValue("name")
+	patient.Gender = req.FormValue("gender")
+	if err := r.patients.Update(req.Context(), patient); err != nil {
+		r.render(w, "patient-form", map[string]interface{}{
+			"Title":      "Edit Patient",
 			"ActivePage": "patients",
 			"Patient":    patient,
 			"Error":      err.Error(),

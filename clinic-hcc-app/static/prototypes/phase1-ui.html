@@ -57,25 +57,25 @@
           <header><p class="muted">Clinic HCC / New receipt</p><h1>Create receipt</h1><p class="muted">A focused flow for the practitioner completing one visit.</p></header>
           <div class="steps"><span class="active">1 Patient</span><span>2 Visit</span><span>3 Charges</span><span>4 Review</span></div>
           <section class="grid two">
-            <div><h2>Patient details</h2><label for="a-name">Name</label><input id="a-name" value="Chan Tai Man"><label for="a-hkid">HKID</label><input id="a-hkid" value="A123456(7)"><label for="a-gender">Gender</label><select id="a-gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
-            <div class="panel"><h2>Selected patient</h2><p><strong>Chan Tai Man</strong></p><p class="muted">A123456(7)<br>3 previous visits</p><button type="button">Use patient</button></div>
+            <div><h2>Patient details</h2><label for="a-name">Name</label><input id="a-name" value="Chan Tai Man"><label for="a-hkid">HKID</label><input id="a-hkid" value="A123456(8)"><label for="a-gender">Gender</label><select id="a-gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+            <div class="panel"><h2>Selected patient</h2><p><strong>Chan Tai Man</strong></p><p class="muted">A123456(8)<br>3 previous visits</p><button id="a-use-patient" type="button">Use patient</button></div>
           </section>
-          <div class="actions"><button type="button">Continue to visit</button><button class="secondary" type="button">Save draft</button></div>`,
+          <div class="actions"><button id="a-continue" type="button">Continue to visit</button><button id="a-save-draft" class="secondary" type="button">Save draft</button></div>`,
       },
       B: {
         name: "Workspace",
         render: () => `
           <header><p class="muted">Receipts / Draft RCP-NEW</p><h1>Visit workspace</h1><p class="muted">Keep patient context visible while entering the receipt.</p></header>
           <div class="split">
-            <aside class="panel stack"><h2>Find patient</h2><label for="b-search">Name or HKID</label><input id="b-search" placeholder="Search patients"><div class="patient selected"><strong>Chan Tai Man</strong><br><span class="muted">A123456(7)</span></div><div class="patient"><strong>Lee Wai Ming</strong><br><span class="muted">AB234567(3)</span></div><button class="secondary" type="button">New patient</button></aside>
-            <section><h2>Receipt charges</h2><div class="grid two"><div><label for="b-date">Visit date</label><input id="b-date" type="date" value="2026-07-22"></div><div><label for="b-diagnosis">Diagnosis</label><input id="b-diagnosis" value="Neck pain"></div></div><table><thead><tr><th>Treatment</th><th>Qty</th><th>Unit price</th></tr></thead><tbody><tr><td>Tui Na</td><td>1</td><td>$600.00</td></tr><tr><td>Acupuncture</td><td>1</td><td>$400.00</td></tr></tbody></table><p class="amount">$1,000.00</p><div class="actions"><button type="button">Save draft</button><button class="secondary" type="button">Finalize</button></div></section>
+            <aside class="panel stack"><h2>Find patient</h2><label for="b-search">Name or HKID</label><input id="b-search" placeholder="Search patients"><div class="patient selected"><strong>Chan Tai Man</strong><br><span class="muted">A123456(8)</span></div><div class="patient"><strong>Lee Wai Ming</strong><br><span class="muted">AB234567(9)</span></div><button id="b-new-patient" class="secondary" type="button">New patient</button></aside>
+            <section><h2>Receipt charges</h2><div class="grid two"><div><label for="b-date">Visit date</label><input id="b-date" type="date" value="2026-07-22"></div><div><label for="b-diagnosis">Diagnosis</label><input id="b-diagnosis" value="Neck pain"></div></div><table><thead><tr><th>Treatment</th><th>Qty</th><th>Unit price</th></tr></thead><tbody><tr><td>Tui Na</td><td>1</td><td>$600.00</td></tr><tr><td>Acupuncture</td><td>1</td><td>$400.00</td></tr></tbody></table><p class="amount">$1,000.00</p><div class="actions"><button id="b-save-draft" type="button">Save draft</button><button id="b-finalize" class="secondary" type="button">Finalize</button></div></section>
           </div>`,
       },
       C: {
         name: "Queue first",
         render: () => `
-          <header><p class="muted">Today / Receipts</p><h1>Receipt queue</h1><p class="muted">Start from the daily work queue, then open or create a receipt.</p><div class="actions"><button type="button">Create receipt</button><button class="secondary" type="button">Search patients</button></div></header>
-          <section><div class="grid three"><div><p class="muted">Drafts</p><h2>2</h2></div><div><p class="muted">Finalized today</p><h2>8</h2></div><div><p class="muted">Revenue today</p><h2>$4,800</h2></div></div><table><thead><tr><th>Patient</th><th>Status</th><th>Total</th><th>Action</th></tr></thead><tbody><tr><td>Chan Tai Man<br><span class="muted">Draft</span></td><td>Draft</td><td>-</td><td><button class="secondary" type="button">Continue</button></td></tr><tr><td>Lee Wai Ming<br><span class="muted">RCP-20260722-A3F2B</span></td><td>Finalized</td><td>$800.00</td><td><button class="secondary" type="button">View</button></td></tr></tbody></table></section>`,
+          <header><p class="muted">Today / Receipts</p><h1>Receipt queue</h1><p class="muted">Start from the daily work queue, then open or create a receipt.</p><div class="actions"><button id="c-create-receipt" type="button">Create receipt</button><button id="c-search-patients" class="secondary" type="button">Search patients</button></div></header>
+          <section><div class="grid three"><div><p class="muted">Drafts</p><h2>2</h2></div><div><p class="muted">Finalized today</p><h2>8</h2></div><div><p class="muted">Revenue today</p><h2>$4,800</h2></div></div><table><thead><tr><th>Patient</th><th>Status</th><th>Total</th><th>Action</th></tr></thead><tbody><tr><td>Chan Tai Man<br><span class="muted">Draft</span></td><td>Draft</td><td>-</td><td><button id="c-continue" class="secondary" type="button">Continue</button></td></tr><tr><td>Lee Wai Ming<br><span class="muted">RCP-20260722-A3F2B</span></td><td>Finalized</td><td>$800.00</td><td><button id="c-view" class="secondary" type="button">View</button></td></tr></tbody></table></section>`,
       }
     };
     const keys = Object.keys(variants);
