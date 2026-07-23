@@ -1,5 +1,10 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{{.Title}}</title></head><body>
-<main><h1>Create password</h1><form id="setup-form" method="post" action="/setup">
-<label for="setup-password">Password</label><input id="setup-password" name="password" type="password" minlength="12" required>
-<label for="setup-confirm-password">Confirm password</label><input id="setup-confirm-password" name="confirm_password" type="password" minlength="12" required>
-<button id="setup-submit" type="submit">Create password</button></form></main></body></html>
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{.Title}} · Clinic HCC</title><link rel="stylesheet" href="/static/css/styles.css"></head>
+<body class="flex min-h-screen items-center justify-center bg-[#f4f7f6] px-4 py-12 text-[#193331]">
+    <main class="w-full max-w-md">
+        <div class="mb-8 text-center"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#123c3a] text-[#d8f3ee]" aria-hidden="true"><svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/><path d="M6.5 6.5a7.78 7.78 0 0 1 11 0 7.78 7.78 0 0 1 0 11 7.78 7.78 0 0 1-11 0 7.78 7.78 0 0 1 0-11Z"/></svg></span><h1 class="mt-5 text-2xl font-bold">Set up your workspace</h1><p class="mt-2 text-sm text-[#657774]">Create the local password for Clinic HCC.</p></div>
+        <form id="setup-form" method="post" action="/setup" class="surface-panel p-6 sm:p-8"><div><label for="setup-password" class="field-label">Password</label><input id="setup-password" name="password" type="password" minlength="12" required class="field-input"><p class="mt-2 text-xs text-[#657774]">Use at least 12 characters.</p></div><div class="mt-5"><label for="setup-confirm-password" class="field-label">Confirm password</label><input id="setup-confirm-password" name="confirm_password" type="password" minlength="12" required class="field-input"></div><button id="setup-submit" type="submit" class="button-primary mt-6 w-full">Create password</button></form>
+    </main>
+</body>
+</html>

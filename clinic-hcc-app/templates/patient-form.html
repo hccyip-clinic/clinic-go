@@ -1,16 +1,15 @@
 {{define "content"}}
-<form id="patient-form" method="post" action="{{if .Patient.ID}}/patients/{{.Patient.ID}}{{else}}/patients{{end}}" class="max-w-2xl rounded-xl bg-white p-6 shadow"><input id="patient-csrf-token" type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-    {{if .Error}}<p id="patient-form-error" class="mb-4 rounded bg-red-50 p-3 text-red-700">{{.Error}}</p>{{end}}
-    <label for="patient-name" class="block font-semibold">Full name</label>
-    <input id="patient-name" name="name" required value="{{.Patient.Name}}" class="mb-4 mt-1 w-full rounded border px-3 py-2">
-    <label for="patient-hkid" class="block font-semibold">HKID</label>
-    <input id="patient-hkid" name="hkid" required value="{{.Patient.HKID}}" placeholder="A123456(8)" {{if .Patient.ID}}readonly{{end}} class="mb-4 mt-1 w-full rounded border px-3 py-2">
-    <label for="patient-gender" class="block font-semibold">Gender</label>
-    <select id="patient-gender" name="gender" required class="mb-6 mt-1 w-full rounded border px-3 py-2">
-        <option value="M" {{if eq .Patient.Gender "M"}}selected{{end}}>Male</option>
-        <option value="F" {{if eq .Patient.Gender "F"}}selected{{end}}>Female</option>
-        <option value="O" {{if eq .Patient.Gender "O"}}selected{{end}}>Other</option>
-    </select>
-    <div class="flex gap-2"><button id="patient-save-button" type="submit" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">Save patient</button><a id="patient-cancel-link" href="/patients" class="rounded bg-gray-200 px-4 py-2">Cancel</a></div>
-</form>
+<div class="max-w-3xl">
+    <div class="mb-6"><p class="eyebrow">Patient directory</p><p class="mt-1 text-sm text-[#657774]">Keep identity information accurate and easy to find.</p></div>
+    <form id="patient-form" method="post" action="{{if .Patient.ID}}/patients/{{.Patient.ID}}{{else}}/patients{{end}}" class="surface-panel p-6 sm:p-8">
+        <input id="patient-csrf-token" type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        {{if .Error}}<p id="patient-form-error" role="alert" class="form-error mb-6">{{.Error}}</p>{{end}}
+        <div class="grid gap-6 sm:grid-cols-2">
+            <div class="sm:col-span-2"><label for="patient-name" class="field-label">Full name</label><input id="patient-name" name="name" required value="{{.Patient.Name}}" class="field-input"></div>
+            <div><label for="patient-hkid" class="field-label">HKID</label><input id="patient-hkid" name="hkid" required value="{{.Patient.HKID}}" placeholder="A123456(8)" {{if .Patient.ID}}readonly{{end}} class="field-input"><p class="mt-2 text-xs text-[#657774]">Stored in canonical format for reliable lookup.</p></div>
+            <div><label for="patient-gender" class="field-label">Gender</label><select id="patient-gender" name="gender" required class="field-input"><option value="M" {{if eq .Patient.Gender "M"}}selected{{end}}>Male</option><option value="F" {{if eq .Patient.Gender "F"}}selected{{end}}>Female</option><option value="O" {{if eq .Patient.Gender "O"}}selected{{end}}>Other</option></select></div>
+        </div>
+        <div class="mt-8 flex flex-wrap gap-3 border-t border-[#d8e3e0] pt-6"><button id="patient-save-button" type="submit" class="button-primary">Save patient</button><a id="patient-cancel-link" href="/patients" class="button-secondary">Cancel</a></div>
+    </form>
+</div>
 {{end}}

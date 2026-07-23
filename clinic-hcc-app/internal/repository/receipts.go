@@ -25,18 +25,18 @@ func NewReceiptRepository(db *database.DB) *ReceiptRepository {
 }
 
 func (r *ReceiptRepository) CreateDraft(ctx context.Context, receipt *models.Receipt) error {
+	receipt.Status = models.StatusDraft
+	receipt.Subtotal = models.CalculateSubtotal(receipt.LineItems)
+	receipt.GrandTotal = models.CalculateGrandTotal(receipt.Subtotal, receipt.DiscountType, receipt.DiscountValue)
+	if validationErrors := models.ValidateReceipt(receipt); len(validationErrors) > 0 {
+		return fmt.Errorf("receipt validation failed: %v", validationErrors)
+	}
 	if receipt.ID == "" {
 		var err error
 		receipt.ID, err = newID("receipt")
 		if err != nil {
 			return err
 		}
-	}
-	receipt.Status = models.StatusDraft
-	receipt.Subtotal = models.CalculateSubtotal(receipt.LineItems)
-	receipt.GrandTotal = models.CalculateGrandTotal(receipt.Subtotal, receipt.DiscountType, receipt.DiscountValue)
-	if validationErrors := models.ValidateReceipt(receipt); len(validationErrors) > 0 {
-		return fmt.Errorf("receipt validation failed: %v", validationErrors)
 	}
 
 	tx, err := r.db.BeginTx(ctx, nil)

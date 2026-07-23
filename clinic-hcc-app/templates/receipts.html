@@ -1,14 +1,17 @@
 {{define "content"}}
-<section class="rounded-xl bg-white p-6 shadow">
-    <div class="mb-6 flex items-center justify-between"><p class="text-gray-600">Drafts can be edited; finalized receipts are immutable.</p><a id="new-receipt-link" href="/receipts/new" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">New receipt</a></div>
+<section class="surface-panel overflow-hidden">
+    <div class="flex flex-wrap items-end justify-between gap-4 border-b border-[#d8e3e0] p-6">
+        <div><p class="eyebrow">Financial records</p><h2 class="mt-1 text-lg font-semibold">Receipt history</h2><p class="mt-1 text-sm text-[#657774]">Drafts can be edited; finalized receipts are immutable.</p></div>
+        <a id="new-receipt-link" href="/receipts/new" class="button-primary"><svg class="h-4 w-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New receipt</a>
+    </div>
     <div class="overflow-x-auto">
-        <table class="w-full text-left">
-            <thead><tr class="border-b"><th class="p-3">Visit date</th><th class="p-3">Receipt number</th><th class="p-3">Status</th><th class="p-3">Total</th><th class="p-3">Action</th></tr></thead>
+        <table class="w-full min-w-[680px] text-left">
+            <thead><tr><th class="table-heading px-6 py-4">Visit date</th><th class="table-heading px-6 py-4">Receipt number</th><th class="table-heading px-6 py-4">Status</th><th class="table-heading px-6 py-4 text-right">Total</th><th class="table-heading px-6 py-4 text-right">Action</th></tr></thead>
             <tbody>
             {{range .Receipts}}
-            <tr class="border-b"><td class="p-3">{{.VisitDate}}</td><td class="p-3">{{if .ReceiptNumber}}{{.ReceiptNumber}}{{else}}Draft{{end}}</td><td class="p-3">{{.Status}}</td><td class="p-3">{{money .GrandTotal}}</td><td class="p-3"><a id="receipt-view-{{.ID}}" href="/receipts/{{.ID}}" class="text-blue-700">View</a></td></tr>
+            <tr class="table-row"><td class="px-6 py-4 text-sm text-[#193331]">{{.VisitDate}}</td><td class="px-6 py-4 text-sm text-[#657774]">{{if .ReceiptNumber}}{{.ReceiptNumber}}{{else}}Draft{{end}}</td><td class="px-6 py-4"><span class="status-badge">{{.Status}}</span></td><td class="px-6 py-4 text-right text-sm font-semibold text-[#193331]">{{money .GrandTotal}}</td><td class="px-6 py-4 text-right"><a id="receipt-view-{{.ID}}" href="/receipts/{{.ID}}" class="text-sm font-semibold text-[#0f766e] hover:underline">View receipt</a></td></tr>
             {{else}}
-            <tr><td colspan="5" class="p-3 text-gray-500">No receipts found.</td></tr>
+            <tr><td colspan="5" class="px-6 py-12 text-center"><p class="font-semibold text-[#193331]">No receipts found</p><p class="mt-1 text-sm text-[#657774]">Create the first receipt to start your clinic history.</p></td></tr>
             {{end}}
             </tbody>
         </table>

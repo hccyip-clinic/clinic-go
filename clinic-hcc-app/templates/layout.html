@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta id="csrf-token" name="csrf-token" content="{{.CSRFToken}}">
-    <title>{{.Title}} - Clinic HCC</title>
+    <title>{{.Title}} · Clinic HCC</title>
     <link rel="stylesheet" href="/static/css/styles.css">
     <script src="/static/js/htmx.min.js"></script>
     <script>
@@ -13,23 +13,93 @@
             const token = document.getElementById("csrf-token").content;
             if (token) event.detail.headers["X-CSRF-Token"] = token;
         });
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById("app-sidebar");
+            const isOpen = sidebar.dataset.open === "true";
+            sidebar.dataset.open = String(!isOpen);
+            document.getElementById("mobile-menu-button").setAttribute("aria-expanded", String(!isOpen));
+            document.getElementById("mobile-menu-button").setAttribute("aria-label", isOpen ? "Open navigation" : "Close navigation");
+            if (isOpen) {
+                document.getElementById("mobile-menu-button").focus();
+            } else {
+                document.getElementById("mobile-close-menu-button").focus();
+            }
+        }
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && document.getElementById("app-sidebar").dataset.open === "true") toggleSidebar();
+        });
     </script>
 </head>
-<body class="min-h-screen bg-gray-100 text-gray-900">
-    <aside class="fixed inset-y-0 left-0 hidden w-64 bg-white p-6 shadow-lg md:block">
-        <h1 class="mb-8 text-xl font-bold">Clinic HCC</h1>
-        <nav aria-label="Primary navigation" class="space-y-2">
-            <a id="nav-dashboard" href="/" class="block rounded px-3 py-2 hover:bg-gray-100">Dashboard</a>
-            <a id="nav-receipts" href="/receipts" class="block rounded px-3 py-2 hover:bg-gray-100">Receipts</a>
-            <a id="nav-patients" href="/patients/search" class="block rounded px-3 py-2 hover:bg-gray-100">Patients</a>
-            <a id="nav-settings" href="/settings" class="block rounded px-3 py-2 hover:bg-gray-100">Settings</a>
-            <form id="logout-form" method="post" action="/logout"><input id="logout-csrf-token" type="hidden" name="csrf_token" value="{{.CSRFToken}}"><button id="logout-button" type="submit" class="block rounded px-3 py-2 text-left hover:bg-gray-100">Sign out</button></form>
+<body class="app-shell">
+    <aside id="app-sidebar" data-open="false" class="app-sidebar fixed inset-y-0 left-0 z-30 hidden w-72 flex-col px-5 py-6 shadow-xl lg:flex">
+        <button id="mobile-close-menu-button" type="button" aria-label="Close navigation" class="button-secondary mb-6 self-end lg:hidden" onclick="toggleSidebar()">Close</button>
+        <div class="mb-10 flex items-center gap-3 px-2">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-100 text-teal-900" aria-hidden="true">
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/><path d="M6.5 6.5a7.78 7.78 0 0 1 11 0 7.78 7.78 0 0 1 0 11 7.78 7.78 0 0 1-11 0 7.78 7.78 0 0 1 0-11Z"/></svg>
+            </span>
+            <div>
+                <p class="app-sidebar__brand text-base font-bold">Clinic HCC</p>
+                <p class="text-xs text-teal-100/70">Practice workspace</p>
+            </div>
+        </div>
+
+        <nav aria-label="Primary navigation" class="flex-1">
+            <p class="mb-3 px-3 text-xs font-bold uppercase tracking-widest text-teal-100/50">Primary</p>
+            <div class="space-y-1">
+                <a id="nav-dashboard" aria-current="{{if eq .ActivePage "dashboard"}}page{{end}}" data-active="{{if eq .ActivePage "dashboard"}}true{{else}}false{{end}}" href="/" class="nav-link">
+                    <svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9Z"/><path d="M9 20v-6h6v6"/></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a id="nav-receipts" aria-current="{{if eq .ActivePage "receipts"}}page{{end}}" data-active="{{if eq .ActivePage "receipts"}}true{{else}}false{{end}}" href="/receipts" class="nav-link">
+                    <svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l3 3v15l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 10h6M9 14h6"/></svg>
+                    <span>Receipts</span>
+                </a>
+                <a id="nav-patients" aria-current="{{if eq .ActivePage "patients"}}page{{end}}" data-active="{{if eq .ActivePage "patients"}}true{{else}}false{{end}}" href="/patients/search" class="nav-link">
+                    <svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 11a3 3 0 1 0 0-6M17 14a6 6 0 0 1 4 6"/></svg>
+                    <span>Patients</span>
+                </a>
+            </div>
+
+            <p class="mb-3 mt-9 px-3 text-xs font-bold uppercase tracking-widest text-teal-100/50">Administration</p>
+            <a id="nav-settings" aria-current="{{if eq .ActivePage "settings"}}page{{end}}" data-active="{{if eq .ActivePage "settings"}}true{{else}}false{{end}}" href="/settings" class="nav-link">
+                <svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/><circle cx="12" cy="12" r="3.5"/></svg>
+                <span>Settings</span>
+            </a>
         </nav>
+
+        <div class="border-t border-white/10 pt-5">
+            <form id="logout-form" method="post" action="/logout">
+                <input id="logout-csrf-token" type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                <button id="logout-button" type="submit" class="nav-link w-full text-left">
+                    <svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 5H5v14h5M14 8l4 4-4 4M18 12H9"/></svg>
+                    <span>Sign out</span>
+                </button>
+            </form>
+        </div>
     </aside>
-    <main class="mx-auto max-w-6xl p-4 md:ml-64 md:p-8">
-        <header class="mb-6">
-            <p class="text-sm text-gray-500">{{.ClinicName}}</p>
-            <h2 class="text-3xl font-bold">{{.Title}}</h2>
+
+    <main class="app-main mx-auto max-w-[1440px] px-4 py-5 sm:px-6 lg:ml-72 lg:px-8 lg:py-8">
+        <header class="app-header mb-8 flex items-start justify-between gap-4 border-b border-[#d8e3e0] pb-6">
+            <div class="flex items-start gap-3">
+                <button id="mobile-menu-button" type="button" aria-controls="app-sidebar" aria-expanded="false" aria-label="Open navigation" class="button-secondary lg:hidden" onclick="toggleSidebar()">
+                    <svg class="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+                <div>
+                    <p class="eyebrow">{{.ClinicName}}</p>
+                    <div class="mt-2 flex flex-wrap items-center gap-2 text-sm text-[#657774]">
+                        <span>Workspace</span><span aria-hidden="true">/</span><span class="text-[#193331]">{{.Title}}</span>
+                    </div>
+                    <h1 class="mt-2 text-3xl font-bold tracking-tight text-[#193331]">{{.Title}}</h1>
+                </div>
+            </div>
+            <div class="hidden items-center gap-3 sm:flex">
+                <div class="text-right">
+                    <p class="text-sm font-semibold text-[#193331]">Practitioner</p>
+                    <p class="text-xs text-[#657774]">Signed in locally</p>
+                </div>
+                <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#d8f3ee] font-bold text-[#115e59]" aria-hidden="true">P</span>
+            </div>
         </header>
         {{template "content" .}}
     </main>

@@ -67,10 +67,30 @@ func (r *Router) ReceiptView(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "receipt not found", http.StatusNotFound)
 		return
 	}
+	patient, err := r.patients.Get(req.Context(), receipt.PatientID)
+	if err != nil {
+		http.Error(w, "patient not found", http.StatusInternalServerError)
+		return
+	}
+	var clinic struct {
+		Name         string
+		Address      string
+		Phone        string
+		Practitioner string
+	}
+	if err := r.db.QueryRowContext(req.Context(), `
+		SELECT clinic_name, clinic_address, clinic_phone, practitioner_name
+		FROM settings WHERE id = 1
+	`).Scan(&clinic.Name, &clinic.Address, &clinic.Phone, &clinic.Practitioner); err != nil {
+		http.Error(w, "unable to load clinic settings", http.StatusInternalServerError)
+		return
+	}
 	r.render(w, req, "receipt-view", map[string]interface{}{
-		"Title":      "Receipt",
-		"ActivePage": "receipts",
-		"Receipt":    receipt,
+		"Title":         "Receipt",
+		"ActivePage":    "receipts",
+		"Receipt":       receipt,
+		"Patient":       patient,
+		"ReceiptClinic": clinic,
 	})
 }
 

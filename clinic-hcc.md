@@ -18,6 +18,12 @@ anything still unclear in this phase?
 /wayfinder
 lookup from quickstart, are we on the right direction?
 
+/wayfinder
+the app layout looks odd and non-professional, what skills you have to make the layout design be modern, professional, clean, and user friendly? 
+
+== 330 AIC
+
+
 ---
 npx skills add mattpocock/skills
 

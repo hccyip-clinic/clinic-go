@@ -1,21 +1,21 @@
 {{define "content"}}
-<section class="rounded-xl bg-white p-6 shadow">
-    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <form id="patient-search-form" method="get" action="/patients" class="flex gap-2">
-            <label class="sr-only" for="patient-search">Search patients</label>
-            <input id="patient-search" name="q" value="{{.Query}}" placeholder="Name or HKID" class="rounded border px-3 py-2">
-            <button id="patient-search-button" type="submit" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">Search</button>
-        </form>
-        <a id="new-patient-link" href="/patients/new" class="rounded bg-blue-600 px-4 py-2 font-semibold text-white">New patient</a>
+<section class="surface-panel overflow-hidden">
+    <div class="flex flex-wrap items-end justify-between gap-4 border-b border-[#d8e3e0] p-6">
+        <div><p class="eyebrow">Patient directory</p><h2 class="mt-1 text-lg font-semibold">Find a patient</h2><p class="mt-1 text-sm text-[#657774]">Search by name or Hong Kong Identity Card number.</p></div>
+        <a id="new-patient-link" href="/patients/new" class="button-primary"><svg class="h-4 w-4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New patient</a>
     </div>
+    <form id="patient-search-form" method="get" action="/patients" class="grid gap-3 border-b border-[#d8e3e0] bg-[#f8faf9] p-6 sm:grid-cols-[1fr_auto]">
+        <div><label class="field-label" for="patient-search">Search patients</label><input id="patient-search" name="q" value="{{.Query}}" placeholder="Name or HKID" class="field-input"></div>
+        <button id="patient-search-button" type="submit" class="button-secondary self-end">Search records</button>
+    </form>
     <div class="overflow-x-auto">
-        <table class="w-full text-left">
-            <thead><tr class="border-b"><th class="p-3">Name</th><th class="p-3">HKID</th><th class="p-3">Gender</th><th class="p-3">Action</th></tr></thead>
+        <table class="w-full min-w-[600px] text-left">
+            <thead><tr><th class="table-heading px-6 py-4">Name</th><th class="table-heading px-6 py-4">HKID</th><th class="table-heading px-6 py-4">Gender</th><th class="table-heading px-6 py-4 text-right">Action</th></tr></thead>
             <tbody>
             {{range .Patients}}
-            <tr class="border-b"><td class="p-3">{{.Name}}</td><td class="p-3">{{.HKID}}</td><td class="p-3">{{.Gender}}</td><td class="p-3"><a id="patient-edit-{{.ID}}" href="/patients/{{.ID}}/edit" class="text-blue-700">Edit</a></td></tr>
+            <tr class="table-row"><td class="px-6 py-4 text-sm font-semibold text-[#193331]">{{.Name}}</td><td class="px-6 py-4 text-sm text-[#657774]">{{.HKID}}</td><td class="px-6 py-4 text-sm text-[#657774]">{{.Gender}}</td><td class="px-6 py-4 text-right"><a id="patient-edit-{{.ID}}" href="/patients/{{.ID}}/edit" class="text-sm font-semibold text-[#0f766e] hover:underline">Open record</a></td></tr>
             {{else}}
-            <tr><td colspan="4" class="p-3 text-gray-500">No patients found.</td></tr>
+            <tr><td colspan="4" class="px-6 py-12 text-center"><p class="font-semibold text-[#193331]">No patients found</p><p class="mt-1 text-sm text-[#657774]">Try another name or HKID, or create a new patient.</p></td></tr>
             {{end}}
             </tbody>
         </table>

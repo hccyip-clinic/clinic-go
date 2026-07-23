@@ -1,4 +1,11 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{{.Title}}</title></head><body>
-<main><h1>Sign in</h1><form id="login-form" method="post" action="/login">
-<label for="login-password">Password</label><input id="login-password" name="password" type="password" required>
-<button id="login-submit" type="submit">Sign in</button></form></main></body></html>
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{.Title}} · Clinic HCC</title><link rel="stylesheet" href="/static/css/styles.css"></head>
+<body class="flex min-h-screen items-center justify-center bg-[#f4f7f6] px-4 py-12 text-[#193331]">
+    <main class="w-full max-w-md">
+        <div class="mb-8 text-center"><span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#123c3a] text-[#d8f3ee]" aria-hidden="true"><svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/><path d="M6.5 6.5a7.78 7.78 0 0 1 11 0 7.78 7.78 0 0 1 0 11 7.78 7.78 0 0 1-11 0 7.78 7.78 0 0 1 0-11Z"/></svg></span><h1 class="mt-5 text-2xl font-bold">Welcome back</h1><p class="mt-2 text-sm text-[#657774]">Sign in to your clinic workspace.</p></div>
+        <form id="login-form" method="post" action="/login" class="surface-panel p-6 sm:p-8"><label for="login-password" class="field-label">Password</label><input id="login-password" name="password" type="password" required autofocus class="field-input"><button id="login-submit" type="submit" class="button-primary mt-6 w-full">Sign in</button></form>
+        <p class="mt-6 text-center text-xs text-[#657774]">Your clinic data stays on this device.</p>
+    </main>
+</body>
+</html>
